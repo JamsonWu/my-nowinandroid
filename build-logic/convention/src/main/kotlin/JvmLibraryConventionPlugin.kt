@@ -18,6 +18,7 @@ import com.google.samples.apps.nowinandroid.configureKotlinJvm
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+// JVM插件约定的依赖
 class JvmLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {

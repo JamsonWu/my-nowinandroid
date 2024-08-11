@@ -20,7 +20,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.getByType
-
+// 使用Compose组件需要的依赖的插件约定
 class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
@@ -28,6 +28,7 @@ class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
             apply(plugin = "org.jetbrains.kotlin.plugin.compose")
 
             val extension = extensions.getByType<LibraryExtension>()
+            // 配置 Jetpack Compose
             configureAndroidCompose(extension)
         }
     }

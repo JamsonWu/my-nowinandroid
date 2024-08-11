@@ -28,10 +28,15 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
 
+// androidLibrary库插件约定配置
+// 为库模块提供自动化配置
+// 指明是库模块，不能单独运行
+// 库模块主要作用是：模块化结构，代码重用，依赖管理等
 class AndroidLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
+                //
                 apply("com.android.library")
                 apply("org.jetbrains.kotlin.android")
                 apply("nowinandroid.android.lint")
@@ -46,6 +51,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 configureGradleManagedDevices(this)
                 // The resource prefix is derived from the module name,
                 // so resources inside ":core:module1" must be prefixed with "core_module1_"
+                // 资源前缀转换
                 resourcePrefix = path.split("""\W""".toRegex()).drop(1).distinct().joinToString(separator = "_").lowercase() + "_"
             }
             extensions.configure<LibraryAndroidComponentsExtension> {

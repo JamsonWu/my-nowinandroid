@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    // 标记构建脚本使用kotlin的DSL语言编写，提供静态类型检查
     `kotlin-dsl`
 }
 
@@ -55,8 +56,12 @@ tasks {
     }
 }
 
+// 自定义插件可以在其它模块中使用
+// 这些插件实际上只是对管理依赖
+// 注册自定义插件
 gradlePlugin {
     plugins {
+        // 注册插件，指定插件名，还要配置id与实现类
         register("androidApplicationCompose") {
             id = "nowinandroid.android.application.compose"
             implementationClass = "AndroidApplicationComposeConventionPlugin"

@@ -20,16 +20,22 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
+// Hilt插件约定的依赖
+// 主要作用是在项目中配置 Dagger Hilt依赖注入框架
 class HiltConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
+            // Hilt使用ksp生成绑定代码
             pluginManager.apply("com.google.devtools.ksp")
             dependencies {
+                // ksp依赖用于添加Hilt的编译器插件，它会在编译时生成绑定代码。
                 add("ksp", libs.findLibrary("hilt.compiler").get())
+                // implementation依赖添加了Hilt的核心库，用于在运行时处理依赖注入。
                 add("implementation", libs.findLibrary("hilt.core").get())
             }
 
             /** Add support for Android modules, based on [AndroidBasePlugin] */
+            // 添加库模块支持
             pluginManager.withPlugin("com.android.base") {
                 pluginManager.apply("dagger.hilt.android.plugin")
                 dependencies {

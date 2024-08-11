@@ -13,26 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+// 插件依赖版本声明
 pluginManagement {
+    // 这行代码告诉Gradle去包含位于build-logic目录下的另一个构建项目。
+    // 这个子项目通常包含了共享的构建逻辑，如自定义插件、任务、配置等。
     includeBuild("build-logic")
     repositories {
+        // google的maven仓库
         google()
+        // 开源的maven仓库
         mavenCentral()
+        // gradle插件仓库
         gradlePluginPortal()
     }
 }
 
 dependencyResolutionManagement {
+    // 解析依赖项时的仓库模式。FAIL_ON_PROJECT_REPOS模式意味着Gradle将只使用在dependencyResolutionManagement
+    // 块中显式声明的仓库来解析依赖项，而不会考虑项目级别的仓库定义。
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
         google()
         mavenCentral()
     }
 }
+
+// 根项目名称
 rootProject.name = "nowinandroid"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+// 子项目定义
 include(":app")
 include(":app-nia-catalog")
 include(":benchmarks")

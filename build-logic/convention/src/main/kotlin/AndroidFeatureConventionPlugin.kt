@@ -22,10 +22,12 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
+// 功能模块约定的插件配置
 class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply {
+                // 应用通用的自定义插件
                 apply("nowinandroid.android.library")
                 apply("nowinandroid.hilt")
             }
@@ -34,15 +36,17 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 configureGradleManagedDevices(this)
             }
 
+            // 功能模块需要依赖的插件，包含子项目与依赖
             dependencies {
+                // 依赖本地项目 :core:ui
+                // "implementation"(project(":core:ui"))
                 add("implementation", project(":core:ui"))
                 add("implementation", project(":core:designsystem"))
-
+                // "implementation"(libs.findLibrary("androidx.hilt.navigation.compose").get())
                 add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.runtimeCompose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewModelCompose").get())
                 add("implementation", libs.findLibrary("androidx.tracing.ktx").get())
-
                 add("androidTestImplementation", libs.findLibrary("androidx.lifecycle.runtimeTesting").get())
             }
         }

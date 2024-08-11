@@ -18,6 +18,7 @@ plugins {
     alias(libs.plugins.nowinandroid.android.feature)
     alias(libs.plugins.nowinandroid.android.library.compose)
     alias(libs.plugins.nowinandroid.android.library.jacoco)
+    // 屏幕截图插件：主要用于自动化UI测试，它通过比较当前应用界面的屏幕截图与预期的“基线”屏幕截图，来验证UI的外观是否符合预期
     alias(libs.plugins.roborazzi)
 }
 

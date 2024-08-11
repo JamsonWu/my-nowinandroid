@@ -21,18 +21,22 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
+// android lint 插件约定的依赖，适用于 application,library
 class AndroidLintConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             when {
                 pluginManager.hasPlugin("com.android.application") ->
+                    // 针对应用代码的检查
                     configure<ApplicationExtension> { lint(Lint::configure) }
 
                 pluginManager.hasPlugin("com.android.library") ->
+                    // 针对库代码的检查
                     configure<LibraryExtension> { lint(Lint::configure) }
 
                 else -> {
                     pluginManager.apply("com.android.lint")
+                    //只是调用Lint扩展进行代码检查
                     configure<Lint>(Lint::configure)
                 }
             }

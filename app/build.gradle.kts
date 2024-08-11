@@ -127,8 +127,8 @@ dependencies {
     androidTestImplementation(libs.androidx.navigation.testing)
     androidTestImplementation(libs.androidx.compose.ui.test)
     androidTestImplementation(libs.hilt.android.testing)
-
     baselineProfile(projects.benchmarks)
+
 }
 
 baselineProfile {

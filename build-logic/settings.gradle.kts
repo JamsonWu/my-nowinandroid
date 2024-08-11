@@ -19,12 +19,16 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    // 指定版本目录
     versionCatalogs {
         create("libs") {
+            // 来自于上级目录下的libs.versions.toml的文件配置
             from(files("../gradle/libs.versions.toml"))
         }
     }
 }
 
+// 当前项目名称
 rootProject.name = "build-logic"
+// 包含子项目，子项目自定义插件及注册插件
 include(":convention")

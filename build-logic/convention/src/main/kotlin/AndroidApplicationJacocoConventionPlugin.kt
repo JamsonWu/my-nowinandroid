@@ -21,6 +21,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
 
+// Jacoco用于报告代码测试的覆盖率范围，可以发现哪些代码未被测试覆盖
 class AndroidApplicationJacocoConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
@@ -28,7 +29,9 @@ class AndroidApplicationJacocoConventionPlugin : Plugin<Project> {
             val androidExtension = extensions.getByType<BaseAppModuleExtension>()
 
             androidExtension.buildTypes.configureEach {
+                // 测试覆盖率
                 enableAndroidTestCoverage = true
+                // 单元测试覆盖率
                 enableUnitTestCoverage = true
             }
 

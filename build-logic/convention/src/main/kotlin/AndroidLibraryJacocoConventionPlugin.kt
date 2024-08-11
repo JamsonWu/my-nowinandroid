@@ -22,6 +22,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
 
+// 库模块Jacoco覆盖测试约定的插件
 class AndroidLibraryJacocoConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
@@ -37,3 +38,4 @@ class AndroidLibraryJacocoConventionPlugin : Plugin<Project> {
         }
     }
 }
+
