@@ -67,6 +67,7 @@ private const val SCROLLBAR_INACTIVE_TO_DORMANT_TIME_IN_MS = 2_000L
 
 /**
  * A [Scrollbar] that allows for fast scrolling of content by dragging its thumb.
+ * 自定义滚动条：通过拖拽滑块(thumb)允许内容快速滚动
  * Its thumb disappears when the scrolling container is dormant.
  * @param modifier a [Modifier] for the [Scrollbar]
  * @param state the driving state for the [Scrollbar]
@@ -75,11 +76,15 @@ private const val SCROLLBAR_INACTIVE_TO_DORMANT_TIME_IN_MS = 2_000L
  */
 @Composable
 fun ScrollableState.DraggableScrollbar(
+    // 滚动栏状态
     state: ScrollbarState,
+    // 方向
     orientation: Orientation,
+    // 滑块移动事件
     onThumbMoved: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // 交互源是啥？
     val interactionSource = remember { MutableInteractionSource() }
     Scrollbar(
         modifier = modifier,
@@ -87,6 +92,7 @@ fun ScrollableState.DraggableScrollbar(
         interactionSource = interactionSource,
         state = state,
         thumb = {
+            // 自定义滑块滚动速度
             DraggableScrollbarThumb(
                 interactionSource = interactionSource,
                 orientation = orientation,
@@ -99,6 +105,7 @@ fun ScrollableState.DraggableScrollbar(
 /**
  * A simple [Scrollbar].
  * Its thumb disappears when the scrolling container is dormant.
+ * 当滚动容器处于静止状态时滑块消失
  * @param modifier a [Modifier] for the [Scrollbar]
  * @param state the driving state for the [Scrollbar]
  * @param orientation the orientation of the scrollbar
@@ -126,6 +133,7 @@ fun ScrollableState.DecorativeScrollbar(
 
 /**
  * A scrollbar thumb that is intended to also be a touch target for fast scrolling.
+ * 快速滚动滑块实现
  */
 @Composable
 private fun ScrollableState.DraggableScrollbarThumb(
@@ -134,18 +142,21 @@ private fun ScrollableState.DraggableScrollbarThumb(
 ) {
     Box(
         modifier = Modifier
+            // 自定义滑块滚动步长
             .run {
                 when (orientation) {
                     Vertical -> width(12.dp).fillMaxHeight()
                     Horizontal -> height(12.dp).fillMaxWidth()
                 }
             }
+            // 滚动滑块
             .scrollThumb(this, interactionSource),
     )
 }
 
 /**
  * A decorative scrollbar thumb used solely for communicating a user's position in a list.
+ * 装饰性滚动滑块
  */
 @Composable
 private fun ScrollableState.DecorativeScrollbarThumb(
@@ -163,7 +174,7 @@ private fun ScrollableState.DecorativeScrollbarThumb(
             .scrollThumb(this, interactionSource),
     )
 }
-
+// 以下是自定义的滑块
 // TODO: This lint is removed in 1.6 as the recommendation has changed
 // remove when project is upgraded
 @SuppressLint("ComposableModifierFactory")

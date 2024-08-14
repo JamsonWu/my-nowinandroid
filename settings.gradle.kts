@@ -40,7 +40,7 @@ dependencyResolutionManagement {
 
 // 根项目名称
 rootProject.name = "nowinandroid"
-
+// 加上这一行代码，引用子模块依赖时就可以直接使用 projects.core.data 这种简化方式来引用了
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 // 子项目定义
 include(":app")
@@ -73,3 +73,4 @@ include(":lint")
 include(":sync:work")
 include(":sync:sync-test")
 include(":ui-test-hilt-manifest")
+include(":mylibrary")

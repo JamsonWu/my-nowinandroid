@@ -32,13 +32,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.samples.apps.nowinandroid.core.designsystem.icon.NiaIcons
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 
 /**
  * Now in Android filled button with generic content slot. Wraps Material 3 [Button].
- *
+ * 包装 Button 组件， 开放 enabled,contentPadding,colors
+ * 实际上只设置了按钮的背景色
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
@@ -60,8 +62,11 @@ fun NiaButton(
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
+            // 容器颜色，对应按钮区域的背景色
             containerColor = MaterialTheme.colorScheme.onBackground,
+            // contentColor =  这是按钮文字与图标颜色
         ),
+        // 按钮文字与图标默认的边距
         contentPadding = contentPadding,
         content = content,
     )
@@ -69,7 +74,7 @@ fun NiaButton(
 
 /**
  * Now in Android filled button with text and icon content slots.
- *
+ * 自定义封装 文字+图标 按钮
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
@@ -104,7 +109,7 @@ fun NiaButton(
 
 /**
  * Now in Android outlined button with generic content slot. Wraps Material 3 [OutlinedButton].
- *
+ * 封装带边框的按钮
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
@@ -128,6 +133,7 @@ fun NiaOutlinedButton(
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.onBackground,
         ),
+        // 边框绘制
         border = BorderStroke(
             width = NiaButtonDefaults.OutlinedButtonBorderWidth,
             color = if (enabled) {
@@ -145,7 +151,7 @@ fun NiaOutlinedButton(
 
 /**
  * Now in Android outlined button with text and icon content slots.
- *
+ * 封装 文字 + 图标 带边框按钮
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
@@ -180,7 +186,7 @@ fun NiaOutlinedButton(
 
 /**
  * Now in Android text button with generic content slot. Wraps Material 3 [TextButton].
- *
+ * 封装文本按钮，主要是改变文字颜色
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
@@ -207,7 +213,7 @@ fun NiaTextButton(
 
 /**
  * Now in Android text button with text and icon content slots.
- *
+ * 封装文字+图标的文本按钮
  * @param onClick Will be called when the user clicks the button.
  * @param modifier Modifier to be applied to the button.
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
@@ -237,7 +243,7 @@ fun NiaTextButton(
 
 /**
  * Internal Now in Android button content layout for arranging the text label and leading icon.
- *
+ * 使用Box封装图标加文字内容
  * @param text The button text label content.
  * @param leadingIcon The button leading icon content. Default is `null` for no leading icon.Ï
  */
@@ -264,13 +270,13 @@ private fun NiaButtonContent(
         text()
     }
 }
-
+// ThemePreviews 注解配置深浅2种预览效果
 @ThemePreviews
 @Composable
 fun NiaButtonPreview() {
     NiaTheme {
         NiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            NiaButton(onClick = {}, text = { Text("Test button") })
+            NiaButton(onClick = {}, text = { Text("Test button 1") })
         }
     }
 }
@@ -280,7 +286,7 @@ fun NiaButtonPreview() {
 fun NiaOutlinedButtonPreview() {
     NiaTheme {
         NiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            NiaOutlinedButton(onClick = {}, text = { Text("Test button") })
+            NiaOutlinedButton(onClick = {}, text = { Text("Test button 999") })
         }
     }
 }

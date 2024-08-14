@@ -21,18 +21,25 @@ import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
 import com.google.samples.apps.nowinandroid.lint.designsystem.DesignSystemDetector
 
+// 注册自定义代码质量检查规则
 class NiaIssueRegistry : IssueRegistry() {
 
+    // 配置代码检查包括哪些问题类型
     override val issues = listOf(
+        // 对Compose不正确使用的检查，对Composable组件做了一些映射，使用时对此做检查
         DesignSystemDetector.ISSUE,
+        // 测试方法命名格式化检查，遵循 given, when,then语法，即前置条件，触发行为，期望结果(比如 assertEquals)
         TestMethodNameDetector.FORMAT,
+        // 测试方法命名前缀检查，测试方法开始为 test
         TestMethodNameDetector.PREFIX,
     )
 
+    // Lint API 级别
     override val api: Int = CURRENT_API
-
+    // Lint 最小 API级别
     override val minApi: Int = 12
 
+    // 信息提供方配置
     override val vendor: Vendor = Vendor(
         vendorName = "Now in Android",
         feedbackUrl = "https://github.com/android/nowinandroid/issues",

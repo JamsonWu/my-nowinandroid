@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 
 /**
  * Now in Android typography.
+ * 自定义了一些不同类型的字体样式
  */
 internal val NiaTypography = Typography(
     displayLarge = TextStyle(

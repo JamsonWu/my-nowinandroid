@@ -30,7 +30,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 /**
  * Now in Android toggle button with icon and checked icon content slots. Wraps Material 3
  * [IconButton].
- *
+ * toggle 图标按钮
  * @param checked Whether the toggle button is currently checked.
  * @param onCheckedChange Called when the user clicks the toggle button and toggles checked.
  * @param modifier Modifier to be applied to the toggle button.
@@ -56,10 +56,14 @@ fun NiaIconToggleButton(
         modifier = modifier,
         enabled = enabled,
         colors = IconButtonDefaults.iconToggleButtonColors(
+            // 选中时容器颜色
             checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            // 选中内容颜色
             checkedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            // 禁用时容器颜色
             disabledContainerColor = if (checked) {
                 MaterialTheme.colorScheme.onBackground.copy(
+                    // 改变透明度
                     alpha = NiaIconButtonDefaults.DISABLED_ICON_BUTTON_CONTAINER_ALPHA,
                 )
             } else {
@@ -67,6 +71,7 @@ fun NiaIconToggleButton(
             },
         ),
     ) {
+        // 传入了2种图标，一个是选中时，一个是非选中图标
         if (checked) checkedIcon() else icon()
     }
 }

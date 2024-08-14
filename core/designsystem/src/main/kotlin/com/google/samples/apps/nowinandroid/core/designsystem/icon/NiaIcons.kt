@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
  * Now in Android icons. Material icons are [ImageVector]s, custom icons are drawable resource IDs.
+ * 这里图标只是做映射，难道只是为了二次封装吗?
  */
 object NiaIcons {
     val Add = Icons.Rounded.Add

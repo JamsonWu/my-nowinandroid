@@ -13,5 +13,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
+# 构建时，gradle会解析这个文件并实例化用于代码检查
+# 注册自定义代码质量检查器
 com.google.samples.apps.nowinandroid.lint.NiaIssueRegistry

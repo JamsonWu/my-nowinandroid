@@ -37,7 +37,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 /**
  * Now in Android view toggle button with included trailing icon as well as compact and expanded
  * text label content slots.
- *
+ * 自定义View Toggle按钮，内部图标写死了，只适用于View
  * @param expanded Whether the view toggle is currently in expanded mode or compact mode.
  * @param onExpandedChange Called when the user clicks the button and toggles the mode.
  * @param modifier Modifier to be applied to the button.

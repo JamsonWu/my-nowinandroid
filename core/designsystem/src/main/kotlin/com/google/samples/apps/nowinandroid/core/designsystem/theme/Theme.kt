@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 
 /**
  * Light default theme color scheme
+ * 浅模式默认主题色
  */
 @VisibleForTesting
 val LightDefaultColorScheme = lightColorScheme(
@@ -66,6 +67,7 @@ val LightDefaultColorScheme = lightColorScheme(
 
 /**
  * Dark default theme color scheme
+ * 深模式默认主题色
  */
 @VisibleForTesting
 val DarkDefaultColorScheme = darkColorScheme(
@@ -98,6 +100,7 @@ val DarkDefaultColorScheme = darkColorScheme(
 
 /**
  * Light Android theme color scheme
+ * 浅模式android主题色
  */
 @VisibleForTesting
 val LightAndroidColorScheme = lightColorScheme(
@@ -130,6 +133,7 @@ val LightAndroidColorScheme = lightColorScheme(
 
 /**
  * Dark Android theme color scheme
+ * 暗模式android主题色
  */
 @VisibleForTesting
 val DarkAndroidColorScheme = darkColorScheme(
@@ -162,21 +166,25 @@ val DarkAndroidColorScheme = darkColorScheme(
 
 /**
  * Light Android gradient colors
+ * 浅模式android渐变色，深绿灰
  */
 val LightAndroidGradientColors = GradientColors(container = DarkGreenGray95)
 
 /**
  * Dark Android gradient colors
+ * 深模式android渐变色
  */
 val DarkAndroidGradientColors = GradientColors(container = Color.Black)
 
 /**
  * Light Android background theme
+ * 浅模式android背景主题
  */
 val LightAndroidBackgroundTheme = BackgroundTheme(color = DarkGreenGray95)
 
 /**
  * Dark Android background theme
+ * 深模式android背景主题
  */
 val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
 
@@ -191,53 +199,73 @@ val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
  */
 @Composable
 fun NiaTheme(
+    // 判断系统是否为深色主题
     darkTheme: Boolean = isSystemInDarkTheme(),
+    // 这里加的 android主题什么用？
     androidTheme: Boolean = false,
     disableDynamicTheming: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     // Color scheme
+    // 判断要用什么主题颜色
     val colorScheme = when {
+        // 如果使用 android 主题，从android5开始，android系统就提供了主题色
         androidTheme -> if (darkTheme) DarkAndroidColorScheme else LightAndroidColorScheme
+        // 没有禁用动态主题同时支持动态主题，从android12开始 android系统就提供了动态色
         !disableDynamicTheming && supportsDynamicTheming() -> {
+            // 注意分支内最后一行代码才是 return的结果
             val context = LocalContext.current
+            // 动态色主题到底能做什么，有什么效果？ todo...
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
+        // 使用默认设备主题
         else -> if (darkTheme) DarkDefaultColorScheme else LightDefaultColorScheme
     }
     // Gradient colors
+    // 模拟阴影效果渐变色
     val emptyGradientColors = GradientColors(container = colorScheme.surfaceColorAtElevation(2.dp))
+    // 默认渐变色
     val defaultGradientColors = GradientColors(
         top = colorScheme.inverseOnSurface,
         bottom = colorScheme.primaryContainer,
         container = colorScheme.surface,
     )
+    // 渐变色
     val gradientColors = when {
         androidTheme -> if (darkTheme) DarkAndroidGradientColors else LightAndroidGradientColors
         !disableDynamicTheming && supportsDynamicTheming() -> emptyGradientColors
         else -> defaultGradientColors
     }
     // Background theme
+    // 默认背影主题
     val defaultBackgroundTheme = BackgroundTheme(
         color = colorScheme.surface,
         tonalElevation = 2.dp,
     )
+    // 背影主题
     val backgroundTheme = when {
+        // android主题
         androidTheme -> if (darkTheme) DarkAndroidBackgroundTheme else LightAndroidBackgroundTheme
         else -> defaultBackgroundTheme
     }
+    // tint主题，背影色与色调提升
     val tintTheme = when {
         androidTheme -> TintTheme()
         !disableDynamicTheming && supportsDynamicTheming() -> TintTheme(colorScheme.primary)
         else -> TintTheme()
     }
     // Composition locals
+    // 值绑定，即对全局变量赋值
+    // 读取值时，使用 *.current
     CompositionLocalProvider(
+        // LocalGradientColors 变量提供方是 gradientColors
+        // 把值gradientColors绑定到本地变量LocalGradientColors中
+        // 读取值方式： LocalGradientColors.current
         LocalGradientColors provides gradientColors,
         LocalBackgroundTheme provides backgroundTheme,
         LocalTintTheme provides tintTheme,
     ) {
+        // 配置主题样式
         MaterialTheme(
             colorScheme = colorScheme,
             typography = NiaTypography,
@@ -245,6 +273,6 @@ fun NiaTheme(
         )
     }
 }
-
+// 支持动态主题的条件API至少为31
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
 fun supportsDynamicTheming() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S

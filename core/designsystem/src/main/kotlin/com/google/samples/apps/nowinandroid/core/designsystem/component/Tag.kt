@@ -27,9 +27,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 
+/**
+ * 定义主题标签组件
+ */
 @Composable
 fun NiaTopicTag(
     modifier: Modifier = Modifier,
+    // 是否已被关注
     followed: Boolean,
     onClick: () -> Unit,
     enabled: Boolean = true,
@@ -37,23 +41,31 @@ fun NiaTopicTag(
 ) {
     Box(modifier = modifier) {
         val containerColor = if (followed) {
+            // 如果已关注，容器颜色为主容器色
             MaterialTheme.colorScheme.primaryContainer
         } else {
+            // 如果未关注，容器色为surfaceVariant并设置透明度
             MaterialTheme.colorScheme.surfaceVariant.copy(
                 alpha = NiaTagDefaults.UNFOLLOWED_TOPIC_TAG_CONTAINER_ALPHA,
             )
         }
+        // 使用文本按钮
         TextButton(
             onClick = onClick,
             enabled = enabled,
+            // 设置颜色
             colors = ButtonDefaults.textButtonColors(
+                // 设置容器颜色
                 containerColor = containerColor,
+                // 设置内容颜色，背景色为容器颜色
                 contentColor = contentColorFor(backgroundColor = containerColor),
+                // 禁用时容器颜色配置
                 disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(
                     alpha = NiaTagDefaults.DISABLED_TOPIC_TAG_CONTAINER_ALPHA,
                 ),
             ),
         ) {
+            // 设置文本的字体样式，设置LocalTextStyle样式，Text组件会使用这个样式
             ProvideTextStyle(value = MaterialTheme.typography.labelSmall) {
                 text()
             }

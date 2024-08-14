@@ -17,16 +17,23 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+// 以下配置，说明代码是java与kotlin混合
 plugins {
+    // 为java库项目提供标准配置，如何打包及依赖管理等
     `java-library`
+    // 在java虚拟机上编译kotlin代码
     kotlin("jvm")
+    // 配置针对什么代码库做检查，应用还是库模块
     alias(libs.plugins.nowinandroid.android.lint)
 }
 
 java {
     // Up to Java 11 APIs are available through desugaring
     // https://developer.android.com/studio/write/java11-minimal-support-table
+    // java向下兼容配置
+    // 源码兼容JAVA11，即源码可以用JAVA11引入的新特性，那么JAVA源码就不能使用高于JAVA11的新特性
     sourceCompatibility = JavaVersion.VERSION_11
+    // 编译后的字节码与JAVA11虚拟机兼容，比JAVA11低的版本虚拟机可能就无法运行了
     targetCompatibility = JavaVersion.VERSION_11
 }
 
@@ -36,10 +43,16 @@ kotlin {
     }
 }
 
+// 隔离编译阶段与测试阶段
 dependencies {
+    // 编译阶段，项目中可能有kotlin代码，编译时需要
     compileOnly(libs.kotlin.stdlib)
+    // 编译阶段需要，在编译阶段代码质量检查
     compileOnly(libs.lint.api)
+    // 测试阶段，提供代码质量检查
     testImplementation(libs.lint.checks)
+    // 测试阶段，与测试有关的
     testImplementation(libs.lint.tests)
+    // 测试阶段，允许使用kotlin编写的测试代码
     testImplementation(kotlin("test"))
 }

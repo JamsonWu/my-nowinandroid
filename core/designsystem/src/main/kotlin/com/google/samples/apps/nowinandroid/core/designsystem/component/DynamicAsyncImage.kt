@@ -43,6 +43,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.R
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalTintTheme
 
 /**
+ * 封装远程加载图片组件
  * A wrapper around [AsyncImage] which determines the colorFilter based on the theme
  */
 @Composable
@@ -53,8 +54,11 @@ fun DynamicAsyncImage(
     placeholder: Painter = painterResource(R.drawable.core_designsystem_ic_placeholder_default),
 ) {
     val iconTint = LocalTintTheme.current.iconTint
+    // 是否正在加载中
     var isLoading by remember { mutableStateOf(true) }
+    // 是否报错
     var isError by remember { mutableStateOf(false) }
+    // 发起图片异步加载
     val imageLoader = rememberAsyncImagePainter(
         model = imageUrl,
         onState = { state ->
@@ -69,6 +73,7 @@ fun DynamicAsyncImage(
     ) {
         if (isLoading && !isLocalInspection) {
             // Display a progress bar while loading
+            // 在加载过程中显示进度，这里是否会与后面的Image图片区域冲突呢
             CircularProgressIndicator(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -76,8 +81,11 @@ fun DynamicAsyncImage(
                 color = MaterialTheme.colorScheme.tertiary,
             )
         }
+        // 显示图片
         Image(
+            // 裁剪
             contentScale = ContentScale.Crop,
+            // 这里为啥不用 isLoading而是用!isLocalInspection(本地检查模式)呢 todo...
             painter = if (isError.not() && !isLocalInspection) imageLoader else placeholder,
             contentDescription = contentDescription,
             colorFilter = if (iconTint != Unspecified) ColorFilter.tint(iconTint) else null,

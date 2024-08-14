@@ -36,21 +36,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.google.samples.apps.nowinandroid.core.designsystem.icon.NiaIcons
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 
+/**
+ * 自定义顶部导航栏
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NiaTopAppBar(
+    // 标题
     @StringRes titleRes: Int,
+    // 导航栏矢量图标
     navigationIcon: ImageVector,
+    // 导航栏内容描述
     navigationIconContentDescription: String,
+    // 动作按钮知量图标
     actionIcon: ImageVector,
+    // 动作按钮内容描述
     actionIconContentDescription: String,
     modifier: Modifier = Modifier,
+    // 颜色
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+    // 导航点击事件
     onNavigationClick: () -> Unit = {},
+    // 动作点击事件
     onActionClick: () -> Unit = {},
 ) {
+    // 标题水平居中
     CenterAlignedTopAppBar(
+        // 标题
         title = { Text(text = stringResource(id = titleRes)) },
+        // 左侧导航图标
         navigationIcon = {
             IconButton(onClick = onNavigationClick) {
                 Icon(
@@ -60,6 +74,7 @@ fun NiaTopAppBar(
                 )
             }
         },
+        // 右侧动作按钮
         actions = {
             IconButton(onClick = onActionClick) {
                 Icon(

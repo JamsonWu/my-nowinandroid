@@ -29,29 +29,40 @@ plugins {
 
 android {
     defaultConfig {
+        // 应用包名，用于标识应用
         applicationId = "com.google.samples.apps.nowinandroid"
+        // 应用版本，内部更新使用
         versionCode = 8
+        // 应用版本名称
         versionName = "0.1.2" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
         // Custom test runner to set up Hilt dependency graph
+        // 自定义测试运行类
         testInstrumentationRunner = "com.google.samples.apps.nowinandroid.core.testing.NiaTestRunner"
         vectorDrawables {
+            // 矢量图形兼容低版本
             useSupportLibrary = true
         }
     }
 
     buildTypes {
+        // 调试
         debug {
+            // 添加构建类型后缀
             applicationIdSuffix = NiaBuildType.DEBUG.applicationIdSuffix
         }
+        // 发布
         release {
+            // 启用代码混淆
             isMinifyEnabled = true
+            // 添加构建类型后缀
             applicationIdSuffix = NiaBuildType.RELEASE.applicationIdSuffix
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             // To publish on the Play store a private signing key is required, but to allow anyone
             // who clones the code to sign and run the release variant, use the debug signing key.
             // TODO: Abstract the signing configuration to a separate file to avoid hardcoding this.
+            // 签名配置
             signingConfig = signingConfigs.named("debug").get()
             // Ensure Baseline Profile is fresh for release builds.
             baselineProfile.automaticGenerationDuringBuild = true
@@ -60,14 +71,17 @@ android {
 
     packaging {
         resources {
+            // 构建时排除些不需要的资源文件
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
     testOptions {
         unitTests {
+            // 单元测试时包含android资源
             isIncludeAndroidResources = true
         }
     }
+    // 指定命名空间
     namespace = "com.google.samples.apps.nowinandroid"
 }
 

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * A class to model background color and tonal elevation values for Now in Android.
+ * 背影色与色调提升
  */
 @Immutable
 data class TintTheme(

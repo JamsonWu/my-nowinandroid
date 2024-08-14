@@ -35,6 +35,7 @@ import java.util.EnumSet
 import kotlin.io.path.Path
 
 /**
+ * 自定义测试代码质量检查器
  * A detector that checks for common patterns in naming the test methods:
  * - [detectPrefix] removes unnecessary "test" prefix in all unit test.
  * - [detectFormat] Checks the `given_when_then` format of Android instrumented tests (backticks are not supported).
@@ -57,6 +58,7 @@ class TestMethodNameDetector : Detector(), SourceCodeScanner {
 
     private fun JavaContext.isAndroidTest() = Path("androidTest") in file.toPath()
 
+    // 测试方法前缀检查，要求以test开头
     private fun PsiMethod.detectPrefix(
         context: JavaContext,
         usageInfo: AnnotationUsageInfo,
@@ -76,6 +78,7 @@ class TestMethodNameDetector : Detector(), SourceCodeScanner {
         )
     }
 
+    // 测试方法格式检查 given when then 或 when then
     private fun PsiMethod.detectFormat(
         context: JavaContext,
         usageInfo: AnnotationUsageInfo,

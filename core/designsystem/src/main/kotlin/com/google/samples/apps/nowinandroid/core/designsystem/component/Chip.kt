@@ -33,7 +33,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 
 /**
  * Now in Android filter chip with included leading checked icon as well as text content slot.
- *
+ * 图文组件，可点击选中，扩展FilterChip组件
  * @param selected Whether the chip is currently checked.
  * @param onSelectedChange Called when the user clicks the chip and toggles checked.
  * @param modifier Modifier to be applied to the chip.
@@ -53,15 +53,19 @@ fun NiaFilterChip(
         selected = selected,
         onClick = { onSelectedChange(!selected) },
         label = {
+            // 给 LocalTextStyle 赋值，改变 label 的字体样式
             ProvideTextStyle(value = MaterialTheme.typography.labelSmall) {
+                //
                 label()
             }
         },
         modifier = modifier,
         enabled = enabled,
+        // 当选中时左边显示选中图标
         leadingIcon = if (selected) {
             {
                 Icon(
+                    // Nia组件常用图标，是矢量图标
                     imageVector = NiaIcons.Check,
                     contentDescription = null,
                 )
@@ -69,7 +73,9 @@ fun NiaFilterChip(
         } else {
             null
         },
+        // 形状：圆角，方形等
         shape = CircleShape,
+        // 设置边框
         border = FilterChipDefaults.filterChipBorder(
             enabled = enabled,
             selected = selected,
@@ -79,13 +85,16 @@ fun NiaFilterChip(
                 alpha = NiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
             ),
             disabledSelectedBorderColor = MaterialTheme.colorScheme.onBackground.copy(
+                // 设置透明度 0.38f
                 alpha = NiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
             ),
             selectedBorderWidth = NiaChipDefaults.ChipBorderWidth,
         ),
         colors = FilterChipDefaults.filterChipColors(
+            // label与icon同色
             labelColor = MaterialTheme.colorScheme.onBackground,
             iconColor = MaterialTheme.colorScheme.onBackground,
+            // 禁用时容器颜色，设置不透明度
             disabledContainerColor = if (selected) {
                 MaterialTheme.colorScheme.onBackground.copy(
                     alpha = NiaChipDefaults.DISABLED_CHIP_CONTAINER_ALPHA,
@@ -99,7 +108,9 @@ fun NiaFilterChip(
             disabledLeadingIconColor = MaterialTheme.colorScheme.onBackground.copy(
                 alpha = NiaChipDefaults.DISABLED_CHIP_CONTENT_ALPHA,
             ),
+            // 选中容器颜色为主容器色
             selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            // label与图标是背景文字颜色
             selectedLabelColor = MaterialTheme.colorScheme.onBackground,
             selectedLeadingIconColor = MaterialTheme.colorScheme.onBackground,
         ),
@@ -110,9 +121,9 @@ fun NiaFilterChip(
 @Composable
 fun ChipPreview() {
     NiaTheme {
-        NiaBackground(modifier = Modifier.size(80.dp, 20.dp)) {
+        NiaBackground(modifier = Modifier.size(100.dp, 30.dp)) {
             NiaFilterChip(selected = true, onSelectedChange = {}) {
-                Text("Chip")
+                Text("checked")
             }
         }
     }

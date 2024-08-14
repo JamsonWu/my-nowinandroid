@@ -50,16 +50,18 @@ import androidx.compose.ui.unit.dp
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 import kotlinx.coroutines.launch
 
+// 封装绘制加载中动画，有点复杂，todo...
 @Composable
 fun NiaLoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "wheel transition")
-
     // Specifies the float animation for slowly drawing out the lines on entering
     val startValue = if (LocalInspectionMode.current) 0F else 1F
+    // 0 到 NUM_OF_LINES-12 的整数数组
     val floatAnimValues = (0 until NUM_OF_LINES).map { remember { Animatable(startValue) } }
+    // 组件内使用 LaunchedEffect 提供协程上下文 可在代码块内使用lanuch发起异步调用
     LaunchedEffect(floatAnimValues) {
         (0 until NUM_OF_LINES).map { index ->
             launch {
@@ -171,3 +173,7 @@ fun NiaOverlayLoadingWheelPreview() {
 
 private const val ROTATION_TIME = 12000
 private const val NUM_OF_LINES = 12
+
+fun main(){
+
+}

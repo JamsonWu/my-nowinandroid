@@ -36,5 +36,6 @@ data class GradientColors(
 
 /**
  * A composition local for [GradientColors].
+ * 定义全局变量，读取使用 LocalGradientColors.current
  */
 val LocalGradientColors = staticCompositionLocalOf { GradientColors() }

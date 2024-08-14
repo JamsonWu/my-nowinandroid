@@ -36,7 +36,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 
 /**
  * Now in Android tab. Wraps Material 3 [Tab] and shifts text label down.
- *
+ * Tab栏目自定义，主要是改变文字字体样式，使用labelLarge字体样式文本居中，文字显示用Box包装
  * @param selected Whether this tab is selected or not.
  * @param onClick The callback to be invoked when this tab is selected.
  * @param modifier Modifier to be applied to the tab.
@@ -73,7 +73,7 @@ fun NiaTab(
 
 /**
  * Now in Android tab row. Wraps Material 3 [TabRow].
- *
+ * 使用TabRow定义Tab容器
  * @param selectedTabIndex The index of the currently selected tab.
  * @param modifier Modifier to be applied to the tab row.
  * @param tabs The tabs inside this tab row. Typically this will be multiple [NiaTab]s. Each element
@@ -88,9 +88,13 @@ fun NiaTabRow(
     TabRow(
         selectedTabIndex = selectedTabIndex,
         modifier = modifier,
+        // 配置容器颜色为透明
         containerColor = Color.Transparent,
+        // 配置内容颜色
         contentColor = MaterialTheme.colorScheme.onSurface,
+        // 配置指示器
         indicator = { tabPositions ->
+            // 改变次要指示器样式
             TabRowDefaults.SecondaryIndicator(
                 modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
                 height = 2.dp,

@@ -36,9 +36,11 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                //
+                // 这是android库构建插件，负责编译打包等
                 apply("com.android.library")
+                // 为android项目添加kotlin语言支持
                 apply("org.jetbrains.kotlin.android")
+                // 为android项目添加lint支持
                 apply("nowinandroid.android.lint")
             }
 

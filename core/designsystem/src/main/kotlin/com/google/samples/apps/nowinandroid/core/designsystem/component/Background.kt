@@ -43,7 +43,7 @@ import kotlin.math.tan
 /**
  * The main background for the app.
  * Uses [LocalBackgroundTheme] to set the color and tonal elevation of a [Surface].
- *
+ * 对背景也做了封装，使用Surface作为背景区域
  * @param modifier Modifier to be applied to the background.
  * @param content The background content.
  */
@@ -52,13 +52,18 @@ fun NiaBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
+    // 从背景主题读取颜色，这个颜色作为Surface的颜色
     val color = LocalBackgroundTheme.current.color
+    // 读取色调提升值
     val tonalElevation = LocalBackgroundTheme.current.tonalElevation
+    // 背景直接使用Surface绘制区
     Surface(
+        // 如果未指定颜色，则直接用透明
         color = if (color == Color.Unspecified) Color.Transparent else color,
         tonalElevation = if (tonalElevation == Dp.Unspecified) 0.dp else tonalElevation,
         modifier = modifier.fillMaxSize(),
     ) {
+        // 将 LocalAbsoluteTonalElevation 赋值为 0
         CompositionLocalProvider(LocalAbsoluteTonalElevation provides 0.dp) {
             content()
         }
@@ -68,7 +73,7 @@ fun NiaBackground(
 /**
  * A gradient background for select screens. Uses [LocalBackgroundTheme] to set the gradient colors
  * of a [Box] within a [Surface].
- *
+ * 封装渐变背景，使用 Surface与Box来实现
  * @param modifier Modifier to be applied to the background.
  * @param gradientColors The gradient colors to be rendered.
  * @param content The background content.
@@ -106,11 +111,14 @@ fun NiaGradientBackground(
 
                     // Create the top gradient that fades out after the halfway point vertically
                     val topGradient = Brush.linearGradient(
+                        // Pair双值字段，可用于键值对
+                        // 0f是变化点起始位置
                         0f to if (currentTopColor == Color.Unspecified) {
                             Color.Transparent
                         } else {
                             currentTopColor
                         },
+                        // 0.724f是变化点结束位置
                         0.724f to Color.Transparent,
                         start = start,
                         end = end,
@@ -127,6 +135,7 @@ fun NiaGradientBackground(
                         end = end,
                     )
 
+                    // 渐变色绘制
                     onDrawBehind {
                         // There is overlap here, so order is important
                         drawRect(topGradient)
@@ -142,6 +151,7 @@ fun NiaGradientBackground(
 /**
  * Multipreview annotation that represents light and dark themes. Add this annotation to a
  * composable to render the both themes.
+ * 定义一个注解：配置深浅2种预览，对应深与浅两种效果
  */
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light theme")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark theme")
@@ -174,6 +184,7 @@ fun BackgroundAndroid() {
 @ThemePreviews
 @Composable
 fun GradientBackgroundDefault() {
+    // 非android与非动态主题，渐变色才有效果
     NiaTheme(disableDynamicTheming = true) {
         NiaGradientBackground(Modifier.size(100.dp), content = {})
     }
@@ -182,6 +193,7 @@ fun GradientBackgroundDefault() {
 @ThemePreviews
 @Composable
 fun GradientBackgroundDynamic() {
+    // 动态主题，渐变无效
     NiaTheme(disableDynamicTheming = false) {
         NiaGradientBackground(Modifier.size(100.dp), content = {})
     }
@@ -190,6 +202,7 @@ fun GradientBackgroundDynamic() {
 @ThemePreviews
 @Composable
 fun GradientBackgroundAndroid() {
+    // android主题渐变无效
     NiaTheme(androidTheme = true) {
         NiaGradientBackground(Modifier.size(100.dp), content = {})
     }

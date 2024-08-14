@@ -47,7 +47,9 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 /**
  * Now in Android navigation bar item with icon and label content slots. Wraps Material 3
  * [NavigationBarItem].
- *
+ * 自定义封装导航栏目组件：自定义导航栏目颜色 + 入参传入选中与未选中图标
+ * 常见导航栏主要包括底部导航栏，侧边导航栏
+ * 导航栏每个栏目的定义是使用组件 NavigationBarItem
  * @param selected Whether this item is selected.
  * @param onClick The callback to be invoked when this item is selected.
  * @param icon The item icon content.
@@ -66,8 +68,11 @@ fun RowScope.NiaNavigationBarItem(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     alwaysShowLabel: Boolean = true,
+    // 默认图标
     icon: @Composable () -> Unit,
+    // 被选中图标
     selectedIcon: @Composable () -> Unit = icon,
+    // label文字
     label: @Composable (() -> Unit)? = null,
 ) {
     NavigationBarItem(
@@ -78,11 +83,17 @@ fun RowScope.NiaNavigationBarItem(
         enabled = enabled,
         label = label,
         alwaysShowLabel = alwaysShowLabel,
+        // 改变导航栏目默认颜色配置
         colors = NavigationBarItemDefaults.colors(
+            // 选中时图标颜色
             selectedIconColor = NiaNavigationDefaults.navigationSelectedItemColor(),
+            // 图标未选中时颜色
             unselectedIconColor = NiaNavigationDefaults.navigationContentColor(),
+            // 文字选中时颜色
             selectedTextColor = NiaNavigationDefaults.navigationSelectedItemColor(),
+            // 文字未选中时颜色
             unselectedTextColor = NiaNavigationDefaults.navigationContentColor(),
+            // 指示器颜色
             indicatorColor = NiaNavigationDefaults.navigationIndicatorColor(),
         ),
     )
@@ -90,7 +101,7 @@ fun RowScope.NiaNavigationBarItem(
 
 /**
  * Now in Android navigation bar with content slot. Wraps Material 3 [NavigationBar].
- *
+ * 自定义导航栏，改变默认内容颜色（文字+图标）
  * @param modifier Modifier to be applied to the navigation bar.
  * @param content Destinations inside the navigation bar. This should contain multiple
  * [NavigationBarItem]s.
@@ -102,6 +113,7 @@ fun NiaNavigationBar(
 ) {
     NavigationBar(
         modifier = modifier,
+        // 改变导航栏内容颜色
         contentColor = NiaNavigationDefaults.navigationContentColor(),
         tonalElevation = 0.dp,
         content = content,
@@ -111,7 +123,7 @@ fun NiaNavigationBar(
 /**
  * Now in Android navigation rail item with icon and label content slots. Wraps Material 3
  * [NavigationRailItem].
- *
+ * 自定义侧边栏栏目样式，类似底部导航栏栏目
  * @param selected Whether this item is selected.
  * @param onClick The callback to be invoked when this item is selected.
  * @param icon The item icon content.
@@ -154,7 +166,7 @@ fun NiaNavigationRailItem(
 
 /**
  * Now in Android navigation rail with header and content slots. Wraps Material 3 [NavigationRail].
- *
+ * 自定义侧边导航栏，主要改变容器颜色与内容颜色
  * @param modifier Modifier to be applied to the navigation rail.
  * @param header Optional header that may hold a floating action button or a logo.
  * @param content Destinations inside the navigation rail. This should contain multiple
@@ -168,6 +180,7 @@ fun NiaNavigationRail(
 ) {
     NavigationRail(
         modifier = modifier,
+        // 容器颜色使用透明
         containerColor = Color.Transparent,
         contentColor = NiaNavigationDefaults.navigationContentColor(),
         header = header,
@@ -178,7 +191,8 @@ fun NiaNavigationRail(
 /**
  * Now in Android navigation suite scaffold with item and content slots.
  * Wraps Material 3 [NavigationSuiteScaffold].
- *
+ * 根据窗口大小等信息来决定生成什么样的导航布局，主要是改变导航栏颜色及传入自适应窗口信息
+ * App主要是使用这个配置导航栏
  * @param modifier Modifier to be applied to the navigation suite scaffold.
  * @param navigationSuiteItems A slot to display multiple items via [NiaNavigationSuiteScope].
  * @param windowAdaptiveInfo The window adaptive info.
@@ -190,14 +204,19 @@ fun NiaNavigationRail(
 )
 @Composable
 fun NiaNavigationSuiteScaffold(
+    // 导航栏目列表
     navigationSuiteItems: NiaNavigationSuiteScope.() -> Unit,
     modifier: Modifier = Modifier,
+    // 窗口信息
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
     content: @Composable () -> Unit,
 ) {
+    // 根据自适应窗口信息决定布局类型
     val layoutType = NavigationSuiteScaffoldDefaults
         .calculateFromAdaptiveInfo(windowAdaptiveInfo)
+    // 定义导航栏目颜色
     val navigationSuiteItemColors = NavigationSuiteItemColors(
+        // 配置底部导航栏栏目颜色
         navigationBarItemColors = NavigationBarItemDefaults.colors(
             selectedIconColor = NiaNavigationDefaults.navigationSelectedItemColor(),
             unselectedIconColor = NiaNavigationDefaults.navigationContentColor(),
@@ -205,6 +224,7 @@ fun NiaNavigationSuiteScaffold(
             unselectedTextColor = NiaNavigationDefaults.navigationContentColor(),
             indicatorColor = NiaNavigationDefaults.navigationIndicatorColor(),
         ),
+        // 配置左边导航栏栏目颜色
         navigationRailItemColors = NavigationRailItemDefaults.colors(
             selectedIconColor = NiaNavigationDefaults.navigationSelectedItemColor(),
             unselectedIconColor = NiaNavigationDefaults.navigationContentColor(),
@@ -212,6 +232,7 @@ fun NiaNavigationSuiteScaffold(
             unselectedTextColor = NiaNavigationDefaults.navigationContentColor(),
             indicatorColor = NiaNavigationDefaults.navigationIndicatorColor(),
         ),
+        // 配置左上角抽屉导航栏栏目颜色
         navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
             selectedIconColor = NiaNavigationDefaults.navigationSelectedItemColor(),
             unselectedIconColor = NiaNavigationDefaults.navigationContentColor(),
@@ -224,13 +245,18 @@ fun NiaNavigationSuiteScaffold(
         navigationSuiteItems = {
             NiaNavigationSuiteScope(
                 navigationSuiteScope = this,
+                // 改变导航栏目颜色
                 navigationSuiteItemColors = navigationSuiteItemColors,
             ).run(navigationSuiteItems)
         },
         layoutType = layoutType,
+        // 容器颜色改为透明
         containerColor = Color.Transparent,
+        // 改变导航栏颜色
         navigationSuiteColors = NavigationSuiteDefaults.colors(
+            // 改变导航栏内容颜色
             navigationBarContentColor = NiaNavigationDefaults.navigationContentColor(),
+            // 改变左边导航栏容器颜色为透明
             navigationRailContainerColor = Color.Transparent,
         ),
         modifier = modifier,
@@ -241,6 +267,7 @@ fun NiaNavigationSuiteScaffold(
 
 /**
  * A wrapper around [NavigationSuiteScope] to declare navigation items.
+ * 自定义导航具体栏目渲染，主要是同时传入选中与非选中图标及改变导航栏目颜色
  */
 @OptIn(ExperimentalMaterial3AdaptiveNavigationSuiteApi::class)
 class NiaNavigationSuiteScope internal constructor(

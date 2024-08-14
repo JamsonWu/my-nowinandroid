@@ -29,6 +29,7 @@ import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UQualifiedReferenceExpression
 
 /**
+ * 自定义封装组件代码质量检查器
  * A detector that checks for incorrect usages of Compose Material APIs over equivalents in
  * the Now in Android design system module.
  */
@@ -44,12 +45,14 @@ class DesignSystemDetector : Detector(), Detector.UastScanner {
             override fun visitCallExpression(node: UCallExpression) {
                 val name = node.methodName ?: return
                 val preferredName = METHOD_NAMES[name] ?: return
+                // 报告建议使用自定义组件
                 reportIssue(context, node, name, preferredName)
             }
 
             override fun visitQualifiedReferenceExpression(node: UQualifiedReferenceExpression) {
                 val name = node.receiver.asRenderString()
                 val preferredName = RECEIVER_NAMES[name] ?: return
+                // 报告建议使用约定图标
                 reportIssue(context, node, name, preferredName)
             }
         }
@@ -62,6 +65,7 @@ class DesignSystemDetector : Detector(), Detector.UastScanner {
             explanation = "This check highlights calls in code that use Compose Material " +
                 "composables instead of equivalents from the Now in Android design system " +
                 "module.",
+            // 自定义Lint检查
             category = Category.CUSTOM_LINT_CHECKS,
             priority = 7,
             severity = Severity.ERROR,
@@ -74,6 +78,7 @@ class DesignSystemDetector : Detector(), Detector.UastScanner {
         // Unfortunately :lint is a Java module and thus can't depend on the :core-designsystem
         // Android module, so we can't use composable function references (eg. ::Button.name)
         // instead of hardcoded names.
+        // 列举要检查哪些组件
         val METHOD_NAMES = mapOf(
             "MaterialTheme" to "NiaTheme",
             "Button" to "NiaButton",
@@ -106,6 +111,7 @@ class DesignSystemDetector : Detector(), Detector.UastScanner {
             name: String,
             preferredName: String,
         ) {
+            // 报告建议使用
             context.report(
                 ISSUE,
                 node,

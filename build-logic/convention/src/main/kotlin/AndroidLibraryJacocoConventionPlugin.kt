@@ -26,6 +26,7 @@ import org.gradle.kotlin.dsl.getByType
 class AndroidLibraryJacocoConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
+            // 添加代码覆盖率工具，构建时会生成Jacoco覆盖率报告
             pluginManager.apply("jacoco")
             val androidExtension = extensions.getByType<LibraryExtension>()
 

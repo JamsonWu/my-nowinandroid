@@ -24,7 +24,9 @@ import org.gradle.kotlin.dsl.getByType
 class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
+            // 添加对android库模块的编译与打包支持
             apply(plugin = "com.android.library")
+            // 添加对Jetpack Compose支持，使用项目可以用Compose编写UI
             apply(plugin = "org.jetbrains.kotlin.plugin.compose")
 
             val extension = extensions.getByType<LibraryExtension>()
