@@ -49,6 +49,7 @@ import javax.inject.Inject
  * @see androidx.profileinstaller.ProfileVerifier.CompilationStatus.ResultCode
  */
 class ProfileVerifierLogger @Inject constructor(
+    // 依赖注入：寻找包含@ApplicationScope注解的CoroutineScope实例
     @ApplicationScope private val scope: CoroutineScope,
 ) {
     companion object {

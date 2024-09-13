@@ -18,6 +18,7 @@ package com.google.samples.apps.nowinandroid.core.model.data
 
 /**
  * External data layer representation of a NiA Topic
+ * UI可访问的Domain模型数据
  */
 data class Topic(
     val id: String,

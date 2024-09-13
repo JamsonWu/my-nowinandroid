@@ -47,6 +47,7 @@ import javax.inject.Singleton
 /**
  * Utility for reporting current timezone the device has set.
  * It always emits at least once with default setting and then for each TZ change.
+ * 每一次时区设置改变都会广播通知至少一次
  */
 interface TimeZoneMonitor {
     val currentTimeZone: Flow<TimeZone>
@@ -60,12 +61,17 @@ internal class TimeZoneBroadcastMonitor @Inject constructor(
 ) : TimeZoneMonitor {
 
     override val currentTimeZone: SharedFlow<TimeZone> =
+        // 使用callbackFlow创建一个流Flow
         callbackFlow {
             // Send the default time zone first.
+            // 向流发射一个值
             trySend(TimeZone.currentSystemDefault())
 
             // Registers BroadcastReceiver for the TimeZone changes
+            // 注意这里的object作用是创建匿名类实例
+            // 继承BroadcastReceiver创建匿名类实例
             val receiver = object : BroadcastReceiver() {
+                // 广播接收处理
                 override fun onReceive(context: Context, intent: Intent) {
                     if (intent.action != Intent.ACTION_TIMEZONE_CHANGED) return
 
@@ -73,6 +79,7 @@ internal class TimeZoneBroadcastMonitor @Inject constructor(
                         null
                     } else {
                         // Starting Android R we also get the new TimeZone.
+                        // 非空对象，然后再调用 let 代码块
                         intent.getStringExtra(Intent.EXTRA_TIMEZONE)?.let { timeZoneId ->
                             // We need to convert it from java.util.Timezone to java.time.ZoneId
                             val zoneId = ZoneId.of(timeZoneId, ZoneId.SHORT_IDS)
@@ -87,6 +94,7 @@ internal class TimeZoneBroadcastMonitor @Inject constructor(
             }
 
             trace("TimeZoneBroadcastReceiver.register") {
+                // 注册接收广播
                 context.registerReceiver(receiver, IntentFilter(Intent.ACTION_TIMEZONE_CHANGED))
             }
 
@@ -94,14 +102,20 @@ internal class TimeZoneBroadcastMonitor @Inject constructor(
             // This way, we can reduce the likelihood that a TZ change wouldn't be caught with the Broadcast Receiver.
             trySend(TimeZone.currentSystemDefault())
 
+            // 协程关闭或取消时会触发这个代码块
             awaitClose {
                 context.unregisterReceiver(receiver)
             }
         }
             // We use to prevent multiple emissions of the same type, because we use trySend multiple times.
+            // 由于多次发射值，要阻止多次发射相同类型的值
             .distinctUntilChanged()
+            // 获取到最新数据值
             .conflate()
+            // 确保流所有异步操作都在ioDispatcher执行
+            // 指定流操作调度器，指定用什么线程池
             .flowOn(ioDispatcher)
             // Sharing the callback to prevent multiple BroadcastReceivers being registered
+            // 共享流
             .shareIn(appScope, SharingStarted.WhileSubscribed(5_000), 1)
 }

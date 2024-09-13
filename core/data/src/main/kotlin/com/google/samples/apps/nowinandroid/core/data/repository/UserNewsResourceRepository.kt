@@ -33,6 +33,7 @@ interface UserNewsResourceRepository {
         ),
     ): Flow<List<UserNewsResource>>
 
+
     /**
      * Returns available news resources for the user's followed topics as a stream.
      */

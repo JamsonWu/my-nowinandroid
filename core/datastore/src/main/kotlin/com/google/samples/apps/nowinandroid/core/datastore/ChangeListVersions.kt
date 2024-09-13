@@ -18,6 +18,7 @@ package com.google.samples.apps.nowinandroid.core.datastore
 
 /**
  * Class summarizing the local version of each model for sync
+ * 数据类，会生成构造函数，会生成属性的getter与setter方法
  */
 data class ChangeListVersions(
     val topicVersion: Int = -1,

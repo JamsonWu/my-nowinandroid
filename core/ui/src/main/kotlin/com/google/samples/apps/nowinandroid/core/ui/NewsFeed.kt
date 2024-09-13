@@ -65,25 +65,35 @@ fun LazyStaggeredGridScope.newsFeed(
                 val analyticsHelper = LocalAnalyticsHelper.current
                 val backgroundColor = MaterialTheme.colorScheme.background.toArgb()
 
+                // 以卡片形式显示
                 NewsResourceCardExpanded(
+                    // 新闻内容
                     userNewsResource = userNewsResource,
+                    // 是否已收藏
                     isBookmarked = userNewsResource.isSaved,
+                    // 点击事件：浏览器中打开链接内容，这里就直接跳转到App浏览器中显示链接内容
+                    // 这个做法的作用是什么呢？跳转后也没法直接返回到App
                     onClick = {
                         onExpandedCardClick()
                         analyticsHelper.logNewsResourceOpened(
                             newsResourceId = userNewsResource.id,
                         )
                         launchCustomChromeTab(context, Uri.parse(userNewsResource.url), backgroundColor)
-
                         onNewsResourceViewed(userNewsResource.id)
                     },
+                    // 是否已经被浏览过的含义吗？
                     hasBeenViewed = userNewsResource.hasBeenViewed,
+                    // 收藏按钮
                     onToggleBookmark = {
                         onNewsResourcesCheckedChanged(
                             userNewsResource.id,
                             !userNewsResource.isSaved,
                         )
                     },
+                    // 点击主题按钮，然后会显示与这个主题相关的内容
+                    // 实际是跳转到感兴趣的栏目列表
+                    // 发现了一个问题，点击这个事件后就无法返回到 foryou 菜单页面了
+                    // 新闻内容左下角会有一级主题按钮
                     onTopicClick = onTopicClick,
                     modifier = Modifier
                         .padding(horizontal = 8.dp)

@@ -27,7 +27,11 @@ import javax.inject.Inject
 class Interests2PaneViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+    // 本来savedStateHandle[TOPIC_ID_ARG]就可以拿到值，为什么要转为StateFlow呢？
+    // 通过转为StateFlow，那么selectedTopicId变成了可观察的状态了
+    // 只要Flow中的值发生变化，那么流就会发生变化，从而让UI组件能监听到，然后重新渲染组件
     val selectedTopicId: StateFlow<String?> =
+        // 当值发生变化后会重新返回一个新的StateFlow
         savedStateHandle.getStateFlow(TOPIC_ID_ARG, savedStateHandle[TOPIC_ID_ARG])
 
     fun onTopicClick(topicId: String?) {

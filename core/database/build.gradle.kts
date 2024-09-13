@@ -17,6 +17,7 @@
 plugins {
     alias(libs.plugins.nowinandroid.android.library)
     alias(libs.plugins.nowinandroid.android.library.jacoco)
+    // room插件配置了 schema位置
     alias(libs.plugins.nowinandroid.android.room)
     alias(libs.plugins.nowinandroid.hilt)
 }

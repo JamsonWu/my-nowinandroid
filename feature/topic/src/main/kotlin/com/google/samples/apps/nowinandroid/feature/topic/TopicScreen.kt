@@ -78,19 +78,31 @@ internal fun TopicRoute(
     modifier: Modifier = Modifier,
     viewModel: TopicViewModel = hiltViewModel(),
 ) {
+    // 主题信息UI状态，响应式流
     val topicUiState: TopicUiState by viewModel.topicUiState.collectAsStateWithLifecycle()
+    // 主题下的新闻列表UI状态，响应式流
     val newsUiState: NewsUiState by viewModel.newsUiState.collectAsStateWithLifecycle()
 
+    // 追踪屏幕事件
     TrackScreenViewEvent(screenName = "Topic: ${viewModel.topicId}")
+    // 单个主题窗口
     TopicScreen(
+        // 主题信息
         topicUiState = topicUiState,
+        // 当前主题下的所有新闻资源
         newsUiState = newsUiState,
         modifier = modifier.testTag("topic:${viewModel.topicId}"),
+        // 是否显示返回按钮
         showBackButton = showBackButton,
+        // 返回事件
         onBackClick = onBackClick,
+        // 关注事件
         onFollowClick = viewModel::followTopicToggle,
+        // 收藏事件
         onBookmarkChanged = viewModel::bookmarkNews,
+        // 是否已读事件
         onNewsResourceViewed = { viewModel.setNewsResourceViewed(it, true) },
+        // 主题点击事件
         onTopicClick = onTopicClick,
     )
 }
@@ -108,28 +120,46 @@ internal fun TopicScreen(
     onNewsResourceViewed: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // 懒加载列表状态，也是使用rememberSaveable实现
     val state = rememberLazyListState()
+    // 追踪UI渲染 性能指标
     TrackScrollJank(scrollableState = state, stateName = "topic:screen")
+    // 外层使用Box容器
     Box(
         modifier = modifier,
     ) {
+        // 使用懒加载列
         LazyColumn(
+            // 引入状态
             state = state,
+            // 水平居中
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // 注意这里的Lambda体内部的代码都应包装在LazyListScope上下文中
+            // 有了这个上下文就方便封装组件在别处了，但封装后的组件也只能应用于这个上下文中
+            // 添加一行，占位符
+            // 注意Item上下文是LazyListScope
+            // 为什么要加Item呢？因为LazyColumn Lambda作用域是LazyListScope
+            // 所以Spacer需要写在包含LazyListScope这个作用域的组件内才可以
             item {
                 Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
             }
             when (topicUiState) {
+                // 加载框也是要放在Item组件内
                 TopicUiState.Loading -> item {
+                    // 主题正在加载中时显示对应加载中组件，有点复杂 todo...
                     NiaLoadingWheel(
                         modifier = modifier,
                         contentDesc = stringResource(id = string.feature_topic_loading),
                     )
                 }
-
+                // 主题加载失败异常未处理
                 TopicUiState.Error -> TODO()
+                // 主题成功
                 is TopicUiState.Success -> {
+                    // 再添加一行主题菜单栏，显示返回按钮与关注按钮
+                    // 关注按钮是有状态的
+                    // 添加单个栏目
                     item {
                         TopicToolbar(
                             showBackButton = showBackButton,
@@ -138,6 +168,7 @@ internal fun TopicScreen(
                             uiState = topicUiState.followableTopic,
                         )
                     }
+                    // 显示
                     topicBody(
                         name = topicUiState.followableTopic.topic.name,
                         description = topicUiState.followableTopic.topic.longDescription,
@@ -153,6 +184,8 @@ internal fun TopicScreen(
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
             }
         }
+
+        // 以下是添加垂直方向快速滚动条
         val itemsAvailable = topicItemsSize(topicUiState, newsUiState)
         val scrollbarState = state.scrollbarState(
             itemsAvailable = itemsAvailable,
@@ -195,10 +228,14 @@ private fun LazyListScope.topicBody(
     onTopicClick: (String) -> Unit,
 ) {
     // TODO: Show icon if available
+    // 添加单个栏目
     item {
+        // 占一行显示主题图片与描述
         TopicHeader(name, description, imageUrl)
     }
 
+    // 用户新闻资源列表用卡片显示
+    // 入参是新闻列表 + 收藏事件 + 已读事件 + 点击主题事件
     userNewsResourceCards(news, onBookmarkChanged, onNewsResourceViewed, onTopicClick)
 }
 
@@ -207,14 +244,18 @@ private fun TopicHeader(name: String, description: String, imageUrl: String) {
     Column(
         modifier = Modifier.padding(horizontal = 24.dp),
     ) {
+        // 显示动态异步图片
         DynamicAsyncImage(
             imageUrl = imageUrl,
             contentDescription = null,
             modifier = Modifier
+                // 图片水平居中显示
                 .align(Alignment.CenterHorizontally)
+                // 直接给图片设置大小，设置最大小最小宽高
                 .size(216.dp)
                 .padding(bottom = 12.dp),
         )
+        // Text样式使用typography预定义样式
         Text(name, style = MaterialTheme.typography.displayMedium)
         if (description.isNotEmpty()) {
             Text(
@@ -233,7 +274,9 @@ private fun LazyListScope.userNewsResourceCards(
     onNewsResourceViewed: (String) -> Unit,
     onTopicClick: (String) -> Unit,
 ) {
+    // 因为新闻资源列表是用状态包装的，所以需要用到when来处理UI
     when (news) {
+        // 资源收集成功
         is NewsUiState.Success -> {
             userNewsResourceCardItems(
                 items = news.news,
@@ -244,10 +287,12 @@ private fun LazyListScope.userNewsResourceCards(
             )
         }
 
+        // 正在加载中
         is NewsUiState.Loading -> item {
             NiaLoadingWheel(contentDesc = "Loading news") // TODO
         }
 
+        // 异常
         else -> item {
             Text("Error") // TODO
         }
@@ -288,6 +333,7 @@ private fun TopicToolbar(
             .padding(bottom = 32.dp),
     ) {
         if (showBackButton) {
+            // 显示返回按钮
             IconButton(onClick = { onBackClick() }) {
                 Icon(
                     imageVector = NiaIcons.ArrowBack,
@@ -301,6 +347,7 @@ private fun TopicToolbar(
             Spacer(modifier = Modifier.width(1.dp))
         }
         val selected = uiState.isFollowed
+        // 显示是否关注的组件
         NiaFilterChip(
             selected = selected,
             onSelectedChange = onFollowClick,

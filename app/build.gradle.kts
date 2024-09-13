@@ -44,12 +44,17 @@ android {
             useSupportLibrary = true
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
 
     buildTypes {
         // 调试
         debug {
             // 添加构建类型后缀
             applicationIdSuffix = NiaBuildType.DEBUG.applicationIdSuffix
+            // 添加自定义构建字段配置
+            buildConfigField( "boolean", "LOG_ROOM_SQL", "true")
         }
         // 发布
         release {
@@ -112,6 +117,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.navigation.compose)
+    // implementation("androidx.navigation:navigation-compose:2.7.0")
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.tracing.ktx)
     implementation(libs.androidx.window.core)

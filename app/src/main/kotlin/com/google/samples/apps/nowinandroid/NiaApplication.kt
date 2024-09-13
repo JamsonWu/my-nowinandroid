@@ -29,6 +29,8 @@ import javax.inject.Inject
  */
 @HiltAndroidApp
 class NiaApplication : Application(), ImageLoaderFactory {
+    // 图片加载器imageLoader依赖注入，在NetWorkModule提供依赖项
+    // 注入的图片加载器是用于加载Svg图片的
     @Inject
     lateinit var imageLoader: dagger.Lazy<ImageLoader>
 
@@ -38,9 +40,12 @@ class NiaApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         // Initialize Sync; the system responsible for keeping data in the app up to date.
+        // 发起数据同步
         Sync.initialize(context = this)
         profileVerifierLogger()
     }
 
+    // 调用newImageLoader()来获取一个图片加载器
+    // UI加载图片是用哪个组件呢？ todo...
     override fun newImageLoader(): ImageLoader = imageLoader.get()
 }

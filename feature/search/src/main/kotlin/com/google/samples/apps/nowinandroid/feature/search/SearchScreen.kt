@@ -94,30 +94,49 @@ import com.google.samples.apps.nowinandroid.core.ui.TrackScreenViewEvent
 import com.google.samples.apps.nowinandroid.core.ui.newsFeed
 import com.google.samples.apps.nowinandroid.feature.search.R as searchR
 
+// 查询路由组件
 @Composable
 internal fun SearchRoute(
     onBackClick: () -> Unit,
+    // 当查询不到数据时，提示信息处提供跳转到主题栏目列表页
     onInterestsClick: () -> Unit,
     onTopicClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     searchViewModel: SearchViewModel = hiltViewModel(),
 ) {
+    // 读取最近查询条件UI状态
     val recentSearchQueriesUiState by searchViewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
+    // 返回查询结果UI状态
     val searchResultUiState by searchViewModel.searchResultUiState.collectAsStateWithLifecycle()
+    // 获取查询条件
     val searchQuery by searchViewModel.searchQuery.collectAsStateWithLifecycle()
+    // 查询UI组件
     SearchScreen(
+        // 传递布局管理，改变组件的行为与外观 ：布局调整，样式调整，交互性，动画效果等
         modifier = modifier,
+        // 查询条件
         searchQuery = searchQuery,
+        // 最近的查询条件
         recentSearchesUiState = recentSearchQueriesUiState,
+        // 查询结果
         searchResultUiState = searchResultUiState,
+        // 查询输入改变事件
         onSearchQueryChanged = searchViewModel::onSearchQueryChanged,
+        // 保存最近的查询条件
         onSearchTriggered = searchViewModel::onSearchTriggered,
+        // 清除最近的查询条件
         onClearRecentSearches = searchViewModel::clearRecentSearches,
+        // 新闻资源收藏事件
         onNewsResourcesCheckedChanged = searchViewModel::setNewsResourceBookmarked,
+        // 新闻资源已读事件
         onNewsResourceViewed = { searchViewModel.setNewsResourceViewed(it, true) },
+        // 主题关注事件
         onFollowButtonClick = searchViewModel::followTopic,
+        // 返回按钮事件
         onBackClick = onBackClick,
+        // 当查询内容为空时指引跳转到主题栏目列表
         onInterestsClick = onInterestsClick,
+        // 点击主题跳转事件
         onTopicClick = onTopicClick,
     )
 }
@@ -138,9 +157,13 @@ internal fun SearchScreen(
     onInterestsClick: () -> Unit = {},
     onTopicClick: (String) -> Unit = {},
 ) {
+    // 追踪屏幕事件
     TrackScreenViewEvent(screenName = "Search")
+    // 列布局
     Column(modifier = modifier) {
+        // 占位符
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+        // 查询工具栏
         SearchToolbar(
             onBackClick = onBackClick,
             onSearchQueryChanged = onSearchQueryChanged,
@@ -153,9 +176,11 @@ internal fun SearchScreen(
             -> Unit
 
             SearchResultUiState.SearchNotReady -> SearchNotReadyBody()
+            // 未输入查询条件，显示最近的查询条件列表
             SearchResultUiState.EmptyQuery,
             -> {
                 if (recentSearchesUiState is RecentSearchQueriesUiState.Success) {
+                    // 显示最近的查询条件内
                     RecentSearchesBody(
                         onClearRecentSearches = onClearRecentSearches,
                         onRecentSearchClicked = {
@@ -169,11 +194,13 @@ internal fun SearchScreen(
 
             is SearchResultUiState.Success -> {
                 if (searchResultUiState.isEmpty()) {
+                    // 查询结果为空时UI展示
                     EmptySearchResultBody(
                         searchQuery = searchQuery,
                         onInterestsClick = onInterestsClick,
                     )
                     if (recentSearchesUiState is RecentSearchQueriesUiState.Success) {
+                        // 当查询结果为空时显示最近查询条件
                         RecentSearchesBody(
                             onClearRecentSearches = onClearRecentSearches,
                             onRecentSearchClicked = {
@@ -184,10 +211,15 @@ internal fun SearchScreen(
                         )
                     }
                 } else {
+                    // 显示查询结果
                     SearchResultBody(
+                        // 查询条件
                         searchQuery = searchQuery,
+                        // 主题列表
                         topics = searchResultUiState.topics,
+                        // 新闻列表
                         newsResources = searchResultUiState.newsResources,
+                        // 触发查询事件
                         onSearchTriggered = onSearchTriggered,
                         onTopicClick = onTopicClick,
                         onNewsResourcesCheckedChanged = onNewsResourcesCheckedChanged,
@@ -277,6 +309,7 @@ private fun SearchNotReadyBody() {
     }
 }
 
+// 显示主题列表与新闻资源列表
 @Composable
 private fun SearchResultBody(
     searchQuery: String,
@@ -293,6 +326,7 @@ private fun SearchResultBody(
         modifier = Modifier
             .fillMaxSize(),
     ) {
+        // 使用垂直不规则表格展示
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Adaptive(300.dp),
             contentPadding = PaddingValues(16.dp),
@@ -303,6 +337,7 @@ private fun SearchResultBody(
                 .testTag("search:newsResources"),
             state = state,
         ) {
+            // 显示主题列表
             if (topics.isNotEmpty()) {
                 item(
                     span = StaggeredGridItemSpan.FullLine,
@@ -339,6 +374,7 @@ private fun SearchResultBody(
                 }
             }
 
+            // 显示新闻资源列表
             if (newsResources.isNotEmpty()) {
                 item(
                     span = StaggeredGridItemSpan.FullLine,
@@ -353,6 +389,7 @@ private fun SearchResultBody(
                     )
                 }
 
+                // 新闻资源展示方式
                 newsFeed(
                     feedState = Success(feed = newsResources),
                     onNewsResourcesCheckedChanged = onNewsResourcesCheckedChanged,
@@ -364,6 +401,7 @@ private fun SearchResultBody(
                 )
             }
         }
+        // 垂直方向添加快速滚动条
         val itemsAvailable = topics.size + newsResources.size
         val scrollbarState = state.scrollbarState(
             itemsAvailable = itemsAvailable,
@@ -447,6 +485,7 @@ private fun SearchToolbar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth(),
     ) {
+        // 返回按钮
         IconButton(onClick = { onBackClick() }) {
             Icon(
                 imageVector = NiaIcons.ArrowBack,
@@ -455,6 +494,7 @@ private fun SearchToolbar(
                 ),
             )
         }
+        // 查询文本输入框
         SearchTextField(
             onSearchQueryChanged = onSearchQueryChanged,
             onSearchTriggered = onSearchTriggered,
@@ -469,20 +509,26 @@ private fun SearchTextField(
     onSearchQueryChanged: (String) -> Unit,
     onSearchTriggered: (String) -> Unit,
 ) {
+    // 焦点请求
     val focusRequester = remember { FocusRequester() }
+    // 本地软键盘
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    // 显示触发查询，保存查询条件，同时关闭软键盘
     val onSearchExplicitlyTriggered = {
         keyboardController?.hide()
         onSearchTriggered(searchQuery)
     }
 
+    // 文本输入框
     TextField(
+        // 输入框色调
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
         ),
+        // 输入框开始查询图标
         leadingIcon = {
             Icon(
                 imageVector = NiaIcons.Search,
@@ -492,6 +538,7 @@ private fun SearchTextField(
                 tint = MaterialTheme.colorScheme.onSurface,
             )
         },
+        // 输入框尾部的删除图标
         trailingIcon = {
             if (searchQuery.isNotEmpty()) {
                 IconButton(
@@ -510,14 +557,18 @@ private fun SearchTextField(
             }
         },
         onValueChange = {
+            // 当输入改变时会触发查询条件改变
             if ("\n" !in it) onSearchQueryChanged(it)
         },
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            // 给输入框绑定焦点
             .focusRequester(focusRequester)
+            // 绑定键盘回车事件
             .onKeyEvent {
                 if (it.key == Key.Enter) {
+                    // 显示触发查询
                     onSearchExplicitlyTriggered()
                     true
                 } else {
@@ -527,9 +578,11 @@ private fun SearchTextField(
             .testTag("searchTextField"),
         shape = RoundedCornerShape(32.dp),
         value = searchQuery,
+        // 软键盘右下角显示探索按钮
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Search,
         ),
+        // 搜索按钮事件为触发查询事件
         keyboardActions = KeyboardActions(
             onSearch = {
                 onSearchExplicitlyTriggered()
@@ -539,6 +592,7 @@ private fun SearchTextField(
         singleLine = true,
     )
     LaunchedEffect(Unit) {
+        // 组件显示时输入框加焦点
         focusRequester.requestFocus()
     }
 }

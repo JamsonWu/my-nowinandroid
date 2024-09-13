@@ -27,9 +27,15 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
+// 提供操作数据库表的相关Dao
+// 这些Dao需要去拿数据库中定义的抽象Dao
+// 所以需要注入NiaDatabase实例
+
 @Module
 @InstallIn(SingletonComponent::class)
 internal object DaosModule {
+    // database.topicDao()方法调用，返回TopicData实例，提供对表topic的操作
+    // 注意Dao实例需要从到数据库实例中去获取
     @Provides
     fun providesTopicsDao(
         database: NiaDatabase,

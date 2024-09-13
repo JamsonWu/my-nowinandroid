@@ -25,6 +25,7 @@ import javax.inject.Inject
 
 /**
  * An [androidx.datastore.core.Serializer] for the [UserPreferences] proto.
+ * 由于使用注解@Inject，Hilt框架会默认生成一个全局单例
  */
 class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferences> {
     override val defaultValue: UserPreferences = UserPreferences.getDefaultInstance()
@@ -32,6 +33,7 @@ class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferenc
     override suspend fun readFrom(input: InputStream): UserPreferences =
         try {
             // readFrom is already called on the data store background thread
+            // 使用 proto 生成的方法反序列化数据
             UserPreferences.parseFrom(input)
         } catch (exception: InvalidProtocolBufferException) {
             throw CorruptionException("Cannot read proto.", exception)
@@ -39,6 +41,7 @@ class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferenc
 
     override suspend fun writeTo(t: UserPreferences, output: OutputStream) {
         // writeTo is already called on the data store background thread
+        // 使用 proto提供的方法序列化写入
         t.writeTo(output)
     }
 }

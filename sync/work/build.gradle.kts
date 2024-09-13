@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 plugins {
+    // android库模块支持
     alias(libs.plugins.nowinandroid.android.library)
+    // 代码测试覆盖率报告支持
     alias(libs.plugins.nowinandroid.android.library.jacoco)
+    // 添加依赖注入框架支持
     alias(libs.plugins.nowinandroid.hilt)
 }
 
@@ -27,9 +30,13 @@ android {
 }
 
 dependencies {
+    // ksp 根据注解自动生成代码，依赖注入框架hilt使用它来生成自动绑定代码
     ksp(libs.hilt.ext.compiler)
+    // 追踪与诊断应用性能工具
     implementation(libs.androidx.tracing.ktx)
+    // 对WorkManager框架支持
     implementation(libs.androidx.work.ktx)
+    // hilt库扩展添加对WorkManager的技
     implementation(libs.hilt.ext.work)
     implementation(projects.core.analytics)
     implementation(projects.core.data)

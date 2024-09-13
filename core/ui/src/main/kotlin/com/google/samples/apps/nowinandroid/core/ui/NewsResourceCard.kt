@@ -98,25 +98,34 @@ fun NewsResourceCardExpanded(
             onClick(label = clickActionLabel, action = null)
         },
     ) {
+        // 卡面内部使用列布局
         Column {
+            // 如果存在图片，则显示图片
             if (!userNewsResource.headerImageUrl.isNullOrEmpty()) {
                 Row {
                     NewsResourceHeaderImage(userNewsResource.headerImageUrl)
                 }
             }
+            // 使用Box容器布局新闻内容
             Box(
                 modifier = Modifier.padding(16.dp),
             ) {
+                // 使用列布局
                 Column {
+                    // 设置间距
                     Spacer(modifier = Modifier.height(12.dp))
+                    // 第一行，设置标题
                     Row {
                         NewsResourceTitle(
                             userNewsResource.title,
                             modifier = Modifier.fillMaxWidth((.8f)),
                         )
+                        // 行水平间距，填充所有空余空间，确保收藏按钮在右侧
                         Spacer(modifier = Modifier.weight(1f))
+                        // 显示收藏按钮
                         BookmarkButton(isBookmarked, onToggleBookmark)
                     }
+                    // 设置垂直间距
                     Spacer(modifier = Modifier.height(14.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (!hasBeenViewed) {
@@ -126,11 +135,14 @@ fun NewsResourceCardExpanded(
                             )
                             Spacer(modifier = Modifier.size(6.dp))
                         }
+                        // 发布日期
                         NewsResourceMetaData(userNewsResource.publishDate, userNewsResource.type)
                     }
                     Spacer(modifier = Modifier.height(14.dp))
+                    // 新闻内容显示
                     NewsResourceShortDescription(userNewsResource.content)
                     Spacer(modifier = Modifier.height(12.dp))
+                    // 显示可关注主题
                     NewsResourceTopics(
                         topics = userNewsResource.followableTopics,
                         onTopicClick = onTopicClick,

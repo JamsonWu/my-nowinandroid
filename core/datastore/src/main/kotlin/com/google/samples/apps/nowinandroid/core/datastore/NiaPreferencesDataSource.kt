@@ -26,15 +26,21 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 
+// 在 DataStoreModule 模块中实例化 userPreferences
+// 依赖注入 userPreferences
 class NiaPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
 ) {
+    // 读取本地用户数据
     val userData = userPreferences.data
+        // 使用 map 返回一个新流
         .map {
+            // 映射流中的用户偏好数据到领域模型UserData中
             UserData(
                 bookmarkedNewsResources = it.bookmarkedNewsResourceIdsMap.keys,
                 viewedNewsResources = it.viewedNewsResourceIdsMap.keys,
                 followedTopics = it.followedTopicIdsMap.keys,
+                // 重新定义主题商标，分2种
                 themeBrand = when (it.themeBrand) {
                     null,
                     ThemeBrandProto.THEME_BRAND_UNSPECIFIED,
@@ -43,6 +49,7 @@ class NiaPreferencesDataSource @Inject constructor(
                     -> ThemeBrand.DEFAULT
                     ThemeBrandProto.THEME_BRAND_ANDROID -> ThemeBrand.ANDROID
                 },
+                // 重新定义主题配置，分3种
                 darkThemeConfig = when (it.darkThemeConfig) {
                     null,
                     DarkThemeConfigProto.DARK_THEME_CONFIG_UNSPECIFIED,
@@ -59,6 +66,7 @@ class NiaPreferencesDataSource @Inject constructor(
             )
         }
 
+
     suspend fun setFollowedTopicIds(topicIds: Set<String>) {
         try {
             userPreferences.updateData {
@@ -73,6 +81,7 @@ class NiaPreferencesDataSource @Inject constructor(
         }
     }
 
+    // 设置关注主题
     suspend fun setTopicIdFollowed(topicId: String, followed: Boolean) {
         try {
             userPreferences.updateData {
@@ -194,7 +203,9 @@ class NiaPreferencesDataSource @Inject constructor(
 }
 
 private fun UserPreferencesKt.Dsl.updateShouldHideOnboardingIfNecessary() {
+    // 没有关注主题，也没有关注作者
     if (followedTopicIds.isEmpty() && followedAuthorIds.isEmpty()) {
+        // 不应隐藏新用户的引导提示
         shouldHideOnboarding = false
     }
 }

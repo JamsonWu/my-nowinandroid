@@ -71,17 +71,25 @@ import com.google.samples.apps.nowinandroid.feature.settings.R.string
 import com.google.samples.apps.nowinandroid.feature.settings.SettingsUiState.Loading
 import com.google.samples.apps.nowinandroid.feature.settings.SettingsUiState.Success
 
+// 设置弹窗组件
 @Composable
 fun SettingsDialog(
+    // 关闭弹窗显示
     onDismiss: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
+    // 读取设置UI状态
     val settingsUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
     SettingsDialog(
+        // 回调函数，关闭弹窗
         onDismiss = onDismiss,
+        // 设置UI状态
         settingsUiState = settingsUiState,
+        // 改变主题标识类型
         onChangeThemeBrand = viewModel::updateThemeBrand,
+        // 更新是否使用动态色
         onChangeDynamicColorPreference = viewModel::updateDynamicColorPreference,
+        // 更改深色主题配置
         onChangeDarkThemeConfig = viewModel::updateDarkThemeConfig,
     )
 }
@@ -89,12 +97,15 @@ fun SettingsDialog(
 @Composable
 fun SettingsDialog(
     settingsUiState: SettingsUiState,
+    // 动态色需要设备支持的
+    // Android API>=31
     supportDynamicColor: Boolean = supportsDynamicTheming(),
     onDismiss: () -> Unit,
     onChangeThemeBrand: (themeBrand: ThemeBrand) -> Unit,
     onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
     onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
 ) {
+    // 获取配置，这是什么？
     val configuration = LocalConfiguration.current
 
     /**
@@ -103,22 +114,28 @@ fun SettingsDialog(
      * Dialog's to occupy full width in Compact mode. Therefore max width
      * is configured below. This should be removed when there's fix to
      * https://issuetracker.google.com/issues/221643630
+     * 弹窗使用AlertDialog组件
      */
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier.widthIn(max = configuration.screenWidthDp.dp - 80.dp),
         onDismissRequest = { onDismiss() },
         title = {
+            // 标题设置
             Text(
                 text = stringResource(string.feature_settings_title),
                 style = MaterialTheme.typography.titleLarge,
             )
         },
+        // 弹窗内容设置
         text = {
+            // 水平方向分隔线
             HorizontalDivider()
+            // 列布局，垂直方向可滚动，并记住滚动状态
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 when (settingsUiState) {
                     Loading -> {
+                        // ui状态数据正在加载中，用文字提示
                         Text(
                             text = stringResource(string.feature_settings_loading),
                             modifier = Modifier.padding(vertical = 16.dp),
@@ -126,6 +143,8 @@ fun SettingsDialog(
                     }
 
                     is Success -> {
+                        // ui状态加载成功后进行渲染
+                        // 注意这是在ColumnScope作用域内
                         SettingsPanel(
                             settings = settingsUiState.settings,
                             supportDynamicColor = supportDynamicColor,
@@ -135,11 +154,13 @@ fun SettingsDialog(
                         )
                     }
                 }
+                // 增加水平分隔线
                 HorizontalDivider(Modifier.padding(top = 8.dp))
                 LinksPanel()
             }
             TrackScreenViewEvent(screenName = "Settings")
         },
+        // 添加确认按钮
         confirmButton = {
             Text(
                 text = stringResource(string.feature_settings_dismiss_dialog_button_text),
@@ -162,8 +183,11 @@ private fun ColumnScope.SettingsPanel(
     onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
     onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
 ) {
+    // 分段标题
     SettingsDialogSectionTitle(text = stringResource(string.feature_settings_theme))
+    // 列设置，RadioGroup效果，单行框
     Column(Modifier.selectableGroup()) {
+        // 使用RadioButton模拟RadioGroup中的单选框
         SettingsDialogThemeChooserRow(
             text = stringResource(string.feature_settings_brand_default),
             selected = settings.brand == DEFAULT,
@@ -175,6 +199,9 @@ private fun ColumnScope.SettingsPanel(
             onClick = { onChangeThemeBrand(ANDROID) },
         )
     }
+    // 以动画形式控制内部组件是否显示
+    // 默认主题时才显示，同时要求设备支持显示动态色
+    // 内部实现同主题设置
     AnimatedVisibility(visible = settings.brand == DEFAULT && supportDynamicColor) {
         Column {
             SettingsDialogSectionTitle(text = stringResource(string.feature_settings_dynamic_color_preference))
@@ -192,6 +219,8 @@ private fun ColumnScope.SettingsPanel(
             }
         }
     }
+    // 添加分段标题
+    // 内部实现同上，只是增加了一个单选框
     SettingsDialogSectionTitle(text = stringResource(string.feature_settings_dark_mode_preference))
     Column(Modifier.selectableGroup()) {
         SettingsDialogThemeChooserRow(
@@ -221,6 +250,7 @@ private fun SettingsDialogSectionTitle(text: String) {
     )
 }
 
+// 自定义单选框组件
 @Composable
 fun SettingsDialogThemeChooserRow(
     text: String,

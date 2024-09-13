@@ -212,6 +212,7 @@ fun NiaNavigationSuiteScaffold(
     content: @Composable () -> Unit,
 ) {
     // 根据自适应窗口信息决定布局类型
+    // 根据当前窗口信息获取布局类型：实际只提供了底部与左侧菜单栏
     val layoutType = NavigationSuiteScaffoldDefaults
         .calculateFromAdaptiveInfo(windowAdaptiveInfo)
     // 定义导航栏目颜色
@@ -241,14 +242,29 @@ fun NiaNavigationSuiteScaffold(
         ),
     )
 
+    // 根据布局类型创建导航布局栏
+    // 根据 layoutType生成侧边栏或底部菜单栏
     NavigationSuiteScaffold(
+        // 菜单列表
+        // 需要NavigationSuiteScope的扩展函数
+        // 但是navigationSuiteItems是自定义NiaNavigationSuiteScope的扩展函数
+        // 需要进行一次转换
         navigationSuiteItems = {
+            // 创建一个对象NiaNavigationSuiteScope实例，然后把这个实例的引用this
+            // 传递给run的Lambda表达式中
+            // 即navigationSuiteItems的Lambda表达式运行在NiaNavigationSuiteScope的上下文中
+            // 当执行navigationSuiteItems的Lambda表达式时需要调用的Item方法
+            // 实际就是调用NiaNavigationSuiteScope实例提供的Item方法
+
+            // 另外一种理解：给navigationSuiteItems中的Lambda表达式提供一个实例的Item方法
             NiaNavigationSuiteScope(
                 navigationSuiteScope = this,
                 // 改变导航栏目颜色
                 navigationSuiteItemColors = navigationSuiteItemColors,
             ).run(navigationSuiteItems)
         },
+
+        // 布局方式
         layoutType = layoutType,
         // 容器颜色改为透明
         containerColor = Color.Transparent,

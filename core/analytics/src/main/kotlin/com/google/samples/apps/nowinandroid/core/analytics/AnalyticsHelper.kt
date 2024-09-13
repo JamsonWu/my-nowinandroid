@@ -19,6 +19,7 @@ package com.google.samples.apps.nowinandroid.core.analytics
 /**
  * Interface for logging analytics events. See `FirebaseAnalyticsHelper` and
  * `StubAnalyticsHelper` for implementations.
+ * 分析事件日志
  */
 interface AnalyticsHelper {
     fun logEvent(event: AnalyticsEvent)

@@ -31,7 +31,12 @@ interface Synchronizer {
     suspend fun updateChangeListVersions(update: ChangeListVersions.() -> ChangeListVersions)
 
     /**
+     * 语法糖
      * Syntactic sugar to call [Syncable.syncWith] while omitting the synchronizer argument
+     * 允许实现了接口 Syncable的对象直接调用 sync方法而不用传递参数 Synchronizer
+     * this@sync是指调用Syncable.sync()扩展函数所在类的实例，而这个类是有syncWith函数，
+     * 而syncWith是有一个入参，入参隐式传入
+     * this@Synchronizer是sync函数调用时上下文中的Synchronizer实例
      */
     suspend fun Syncable.sync() = this@sync.syncWith(this@Synchronizer)
 }
@@ -49,6 +54,7 @@ interface Syncable {
 }
 
 /**
+ * 封装异步执行代码块，目的是异步处理
  * Attempts [block], returning a successful [Result] if it succeeds, otherwise a [Result.Failure]
  * taking care not to break structured concurrency
  */
@@ -66,10 +72,17 @@ private suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> = 
 }
 
 /**
+ * 定义本地与远程数据同步流程，即抽象模板方法，在模板中体现了整个更新步骤
+ * 差异化代码在子类实现，因为这个模板方法是通用模板，可提供不同的子类使用
+ * 网络同步本地数据一个通用方法
  * Utility function for syncing a repository with the network.
+ * 需要被同步的模型版本
  * [versionReader] Reads the current version of the model that needs to be synced
+ * 获取模型变化列表
  * [changeListFetcher] Fetches the change list for the model
+ * 版本更新
  * [versionUpdater] Updates the [ChangeListVersions] after a successful sync
+ * 模型删除
  * [modelDeleter] Deletes models by consuming the ids of the models that have been deleted.
  * [modelUpdater] Updates models by consuming the ids of the models that have changed.
  *
@@ -84,20 +97,27 @@ suspend fun Synchronizer.changeListSync(
     modelUpdater: suspend (List<String>) -> Unit,
 ) = suspendRunCatching {
     // Fetch the change list since last sync (akin to a git fetch)
+    // 获取当前版本
     val currentVersion = versionReader(getChangeListVersions())
     val changeList = changeListFetcher(currentVersion)
     if (changeList.isEmpty()) return@suspendRunCatching true
 
+    // 被删除了 要求更新
+    // 对changeList进行分隔，第1个字段是被删除列表，第2个字段是更
     val (deleted, updated) = changeList.partition(NetworkChangeList::isDelete)
 
     // Delete models that have been deleted server-side
+    // 传参需要删除的ID列表
     modelDeleter(deleted.map(NetworkChangeList::id))
 
     // Using the change list, pull down and save the changes (akin to a git pull)
+    // 传参需要更新的列表ID
     modelUpdater(updated.map(NetworkChangeList::id))
 
     // Update the last synced version (akin to updating local git HEAD)
+    // 获取变化列表最后一个版本号
     val latestVersion = changeList.last().changeListVersion
+    // 更新变化列表版本号
     updateChangeListVersions {
         versionUpdater(latestVersion)
     }

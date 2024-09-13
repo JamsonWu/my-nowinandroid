@@ -17,7 +17,10 @@
 package com.google.samples.apps.nowinandroid.core.database.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.samples.apps.nowinandroid.core.database.NiaDatabase
 import dagger.Module
 import dagger.Provides
@@ -37,5 +40,12 @@ internal object DatabaseModule {
         context,
         NiaDatabase::class.java,
         "nia-database",
-    ).build()
+    )
+        .addCallback(object : RoomDatabase.Callback(){
+            override fun onOpen(db: SupportSQLiteDatabase) {
+                super.onOpen(db)
+            }
+        })
+        // .addInterceptor(QueryLoggingInterceptor())
+        .build()
 }

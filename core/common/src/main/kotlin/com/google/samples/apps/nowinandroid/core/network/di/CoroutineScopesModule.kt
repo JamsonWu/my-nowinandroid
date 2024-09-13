@@ -29,6 +29,7 @@ import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Retention(AnnotationRetention.RUNTIME)
+// 加上这个注解，依赖注入时就会去寻找包含这个注解的实例
 @Qualifier
 annotation class ApplicationScope
 
@@ -37,8 +38,17 @@ annotation class ApplicationScope
 internal object CoroutineScopesModule {
     @Provides
     @Singleton
+    // 依赖注入时，只要加上这个@ApplicationScope注解，就会找这个实例
     @ApplicationScope
     fun providesCoroutineScope(
+        // 依赖注入，由于用了注解 @Dispatcher(Default)，所以会去找包含这个注解的CoroutineDispatcher实例
+        // 标注协程调度策略
         @Dispatcher(Default) dispatcher: CoroutineDispatcher,
-    ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+    ): CoroutineScope = CoroutineScope(
+                // 创建一个 SupervisorJob 实例，它作为取消上下文
+        SupervisorJob()
+                // + 运算符在这里用于合并两个 CoroutineContext 元素。
+                +
+                // 提供一个 CoroutineDispatcher 实例，它决定了协程的调度策略
+                dispatcher)
 }

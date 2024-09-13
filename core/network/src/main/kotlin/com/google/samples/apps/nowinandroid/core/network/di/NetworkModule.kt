@@ -53,7 +53,9 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun okHttpCallFactory(): Call.Factory = trace("NiaOkHttpClient") {
+        // http通讯
         OkHttpClient.Builder()
+            // 添加日志拦截器
             .addInterceptor(
                 HttpLoggingInterceptor()
                     .apply {
@@ -69,7 +71,7 @@ internal object NetworkModule {
      * Since we're displaying SVGs in the app, Coil needs an ImageLoader which supports this
      * format. During Coil's initialization it will call `applicationContext.newImageLoader()` to
      * obtain an ImageLoader.
-     *
+     * Coil是android图片加载库
      * @see <a href="https://github.com/coil-kt/coil/blob/main/coil-singleton/src/main/java/coil/Coil.kt">Coil</a>
      */
     @Provides
@@ -81,6 +83,7 @@ internal object NetworkModule {
     ): ImageLoader = trace("NiaImageLoader") {
         ImageLoader.Builder(application)
             .callFactory { okHttpCallFactory.get() }
+            // 解析Svg
             .components { add(SvgDecoder.Factory()) }
             // Assume most content images are versioned urls
             // but some problematic images are fetching each time

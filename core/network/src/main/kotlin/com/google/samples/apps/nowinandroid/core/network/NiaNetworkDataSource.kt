@@ -22,6 +22,7 @@ import com.google.samples.apps.nowinandroid.core.network.model.NetworkTopic
 
 /**
  * Interface representing network calls to the NIA backend
+ * 网络数据源接口声明
  */
 interface NiaNetworkDataSource {
     suspend fun getTopics(ids: List<String>? = null): List<NetworkTopic>

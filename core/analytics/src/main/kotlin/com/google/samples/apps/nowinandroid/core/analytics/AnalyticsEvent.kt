@@ -32,6 +32,7 @@ data class AnalyticsEvent(
 ) {
     // Standard analytics types.
     class Types {
+        // companion object 特殊类型对象与类关联，用于在类内部定义静态成员
         companion object {
             const val SCREEN_VIEW = "screen_view" // (extras: SCREEN_NAME)
         }
@@ -46,6 +47,7 @@ data class AnalyticsEvent(
      * parameter).
      *
      * @param value - the parameter value.
+     * 在类内部定义数据类，这个数据类可以在外部直接访问
      */
     data class Param(val key: String, val value: String)
 

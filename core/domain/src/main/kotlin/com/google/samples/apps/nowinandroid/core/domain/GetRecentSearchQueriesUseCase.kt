@@ -23,6 +23,7 @@ import javax.inject.Inject
 
 /**
  * A use case which returns the recent search queries.
+ * 获取最近查询
  */
 class GetRecentSearchQueriesUseCase @Inject constructor(
     private val recentSearchRepository: RecentSearchRepository,

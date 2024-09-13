@@ -50,27 +50,36 @@ class SearchViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
+    // 获取查询条件值
     val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
 
+    // 查询返回UI状态
+    // 当searchQuery值发生改变时会自动触发流重新收集流
     val searchResultUiState: StateFlow<SearchResultUiState> =
+        // 获取本地仓库所新闻资源数量+本地仓库主题数量
         searchContentsRepository.getSearchContentsCount()
+            // 读取最新流数据
             .flatMapLatest { totalCount ->
                 if (totalCount < SEARCH_MIN_FTS_ENTITY_COUNT) {
                     flowOf(SearchResultUiState.SearchNotReady)
                 } else {
                     searchQuery.flatMapLatest { query ->
+                        // 查询内容长度要>=SEARCH_QUERY_MIN_LENGTH
                         if (query.length < SEARCH_QUERY_MIN_LENGTH) {
                             flowOf(SearchResultUiState.EmptyQuery)
                         } else {
+                            // 执行查询
                             getSearchContentsUseCase(query)
                                 // Not using .asResult() here, because it emits Loading state every
                                 // time the user types a letter in the search box, which flickers the screen.
+                                // 查询结果转换为UI状态map<T,R>
                                 .map<UserSearchResult, SearchResultUiState> { data ->
                                     SearchResultUiState.Success(
                                         topics = data.topics,
                                         newsResources = data.newsResources,
                                     )
                                 }
+                                // 如果流收集异常，则发送异步通知
                                 .catch { emit(SearchResultUiState.LoadFailed) }
                         }
                     }
@@ -81,6 +90,7 @@ class SearchViewModel @Inject constructor(
                 initialValue = SearchResultUiState.Loading,
             )
 
+    // 最近的查询条件UI状态
     val recentSearchQueriesUiState: StateFlow<RecentSearchQueriesUiState> =
         recentSearchQueriesUseCase()
             .map(RecentSearchQueriesUiState::Success)
@@ -90,6 +100,7 @@ class SearchViewModel @Inject constructor(
                 initialValue = RecentSearchQueriesUiState.Loading,
             )
 
+    // 查询内容改变时触发事件，设置查询条件值
     fun onSearchQueryChanged(query: String) {
         savedStateHandle[SEARCH_QUERY] = query
     }
@@ -100,6 +111,7 @@ class SearchViewModel @Inject constructor(
      *
      * The search results are displayed on the fly as the user types, but to explicitly save the
      * search query in the search text field, defining this method.
+     * 保存最近的查询条件
      */
     fun onSearchTriggered(query: String) {
         viewModelScope.launch {
@@ -108,24 +120,28 @@ class SearchViewModel @Inject constructor(
         analyticsHelper.logEventSearchTriggered(query = query)
     }
 
+    // 清除最近查询条件
     fun clearRecentSearches() {
         viewModelScope.launch {
             recentSearchRepository.clearRecentSearches()
         }
     }
 
+    // 设置新闻收藏
     fun setNewsResourceBookmarked(newsResourceId: String, isChecked: Boolean) {
         viewModelScope.launch {
             userDataRepository.setNewsResourceBookmarked(newsResourceId, isChecked)
         }
     }
 
+    // 设置主题关注
     fun followTopic(followedTopicId: String, followed: Boolean) {
         viewModelScope.launch {
             userDataRepository.setTopicIdFollowed(followedTopicId, followed)
         }
     }
 
+    // 设置新闻资源已读
     fun setNewsResourceViewed(newsResourceId: String, viewed: Boolean) {
         viewModelScope.launch {
             userDataRepository.setNewsResourceViewed(newsResourceId, viewed)

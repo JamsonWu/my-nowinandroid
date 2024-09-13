@@ -52,7 +52,6 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
                 schemaDirectory("$projectDir/schemas")
             }
 
-
             dependencies {
                 // 添加Room运行时库，ktx扩展与ksp编译器
                 // 其中libs在versionCatalogs中会配置，在settings.gradle.kts文件中

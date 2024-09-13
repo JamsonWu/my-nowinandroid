@@ -36,7 +36,6 @@ kotlin {
         jvmTarget = JvmTarget.JVM_17
     }
 }
-
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.android.tools.common)

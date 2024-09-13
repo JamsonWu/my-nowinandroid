@@ -30,10 +30,13 @@ import kotlinx.coroutines.Dispatchers
 @InstallIn(SingletonComponent::class)
 object DispatchersModule {
     @Provides
+    // 创建CoroutineDispatcher实例，当注解标记为@Dispatcher(IO)时使用这个实例
+    // 注解其实只是一个标记作用，在运行时可反射读取，用于识别我要使用哪种类型的实例
     @Dispatcher(IO)
     fun providesIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
+    // 当注解为@Dispatcher(Default)时使用这个实例
     @Dispatcher(Default)
     fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 }

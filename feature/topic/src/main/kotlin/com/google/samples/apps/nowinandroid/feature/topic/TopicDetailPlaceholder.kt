@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 
+// 主题详情点位符
 @Composable
 fun TopicDetailPlaceholder(modifier: Modifier = Modifier) {
     Card(
@@ -43,7 +44,9 @@ fun TopicDetailPlaceholder(modifier: Modifier = Modifier) {
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
+            // Alignment是对齐方式
             horizontalAlignment = Alignment.CenterHorizontally,
+            // Arrangement是布局方式
             verticalArrangement = Arrangement.spacedBy(
                 20.dp,
                 alignment = Alignment.CenterVertically,

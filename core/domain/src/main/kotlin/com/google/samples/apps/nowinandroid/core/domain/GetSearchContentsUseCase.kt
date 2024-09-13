@@ -25,25 +25,34 @@ import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
 import com.google.samples.apps.nowinandroid.core.model.data.UserSearchResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
  * A use case which returns the searched contents matched with the search query.
+ * 需要依赖注入2个仓库
  */
 class GetSearchContentsUseCase @Inject constructor(
     private val searchContentsRepository: SearchContentsRepository,
     private val userDataRepository: UserDataRepository,
 ) {
 
+    // 特殊的类函数，通过类直接调用：getSearchContentsUseCase(query)
     operator fun invoke(
         searchQuery: String,
     ): Flow<UserSearchResult> =
         searchContentsRepository.searchContents(searchQuery)
+            // 查询结果合成用户数据，目前只有一个目的，判断主题是否已关注
+            // 同时新闻资源加上了用户数据，给新闻列表加上了主题是否已关注+资源是否已收藏+资源是否已读
             .mapToUserSearchResult(userDataRepository.userData)
 }
 
+// 定义Flow<SearchResult>类型的扩展函数
+// combine函数用法之二
 private fun Flow<SearchResult>.mapToUserSearchResult(userDataStream: Flow<UserData>): Flow<UserSearchResult> =
+    // 注意这里是Flow<T1>.combine，
     combine(userDataStream) { searchResult, userData ->
+        // data class 也是一个类，但主要是用于存数据的，实例化赋值很方便
         UserSearchResult(
             topics = searchResult.topics.map { topic ->
                 FollowableTopic(

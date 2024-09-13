@@ -33,7 +33,9 @@ import com.google.samples.apps.nowinandroid.core.database.model.TopicEntity
 import com.google.samples.apps.nowinandroid.core.database.model.TopicFtsEntity
 import com.google.samples.apps.nowinandroid.core.database.util.InstantConverter
 
+// 数据库配置
 @Database(
+    // 配置表实体，每个实体都会生成一张数据库表
     entities = [
         NewsResourceEntity::class,
         NewsResourceTopicCrossRef::class,

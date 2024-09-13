@@ -24,23 +24,29 @@ import kotlinx.datetime.Instant
 
 /**
  * Defines an NiA news resource.
+ * 实体定义
  */
 @Entity(
+    // 数据库表名
     tableName = "news_resources",
 )
 data class NewsResourceEntity(
+    // 声明id为主键
     @PrimaryKey
     val id: String,
     val title: String,
     val content: String,
     val url: String,
+    // 字段映射：name是表字段名，headerImageUrl是实体字段名
     @ColumnInfo(name = "header_image_url")
     val headerImageUrl: String?,
     @ColumnInfo(name = "publish_date")
+    // Instant是日期时间类型，适合跨时区的日期时间操作
     val publishDate: Instant,
     val type: String,
 )
 
+// 实体扩展方法，作用是将实体转为领域模型
 fun NewsResourceEntity.asExternalModel() = NewsResource(
     id = id,
     title = title,
@@ -49,5 +55,6 @@ fun NewsResourceEntity.asExternalModel() = NewsResource(
     headerImageUrl = headerImageUrl,
     publishDate = publishDate,
     type = type,
+    // 空列表
     topics = listOf(),
 )

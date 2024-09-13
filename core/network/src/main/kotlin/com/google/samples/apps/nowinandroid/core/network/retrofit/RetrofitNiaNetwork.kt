@@ -35,6 +35,7 @@ import javax.inject.Singleton
 
 /**
  * Retrofit API declaration for NIA Network API
+ * 网络请求接口声明
  */
 private interface RetrofitNiaNetworkApi {
     @GET(value = "topics")
@@ -70,6 +71,9 @@ private data class NetworkResponse<T>(
 
 /**
  * [Retrofit] backed [NiaNetworkDataSource]
+ * 网络请求服务，实现请求接口，使用Retrofit框架访问接口
+ * 依赖注入2个参数：networkJson 与 okhttpCallFactory
+ * 在NetworkModule模块中声明提供依赖项
  */
 @Singleton
 internal class RetrofitNiaNetwork @Inject constructor(
@@ -77,6 +81,7 @@ internal class RetrofitNiaNetwork @Inject constructor(
     okhttpCallFactory: dagger.Lazy<Call.Factory>,
 ) : NiaNetworkDataSource {
 
+    // trace会记录操作开始与结束时间及任何可能发生的异常
     private val networkApi = trace("RetrofitNiaNetwork") {
         Retrofit.Builder()
             .baseUrl(NIA_BASE_URL)
@@ -87,9 +92,14 @@ internal class RetrofitNiaNetwork @Inject constructor(
                 networkJson.asConverterFactory("application/json".toMediaType()),
             )
             .build()
+            // 关联接口映射配置，参数是Class
+            // RetrofitNiaNetworkApi::class 是kotlin RetrofitNiaNetworkApi反射对象KClass
+            // 要转为java的class时，只要加.java
+            // 用 ::class.java用来获取kotlin类的java类型
             .create(RetrofitNiaNetworkApi::class.java)
     }
 
+    //
     override suspend fun getTopics(ids: List<String>?): List<NetworkTopic> =
         networkApi.getTopics(ids = ids).data
 

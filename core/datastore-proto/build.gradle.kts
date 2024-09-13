@@ -16,6 +16,7 @@
 
 plugins {
     alias(libs.plugins.nowinandroid.android.library)
+    // 用于编译和生成java与kotlin的源代码
     alias(libs.plugins.protobuf)
 }
 
@@ -26,15 +27,19 @@ android {
 // Setup protobuf configuration, generating lite Java and Kotlin classes
 protobuf {
     protoc {
+        // 设置 protoc 编译器版本
         artifact = libs.protobuf.protoc.get().toString()
     }
+    // 生成代码规则
     generateProtoTasks {
         all().forEach { task ->
             task.builtins {
                 register("java") {
+                    // 生成轻量级java类
                     option("lite")
                 }
                 register("kotlin") {
+                    // 生成轻量级kotlin类
                     option("lite")
                 }
             }
@@ -42,6 +47,7 @@ protobuf {
     }
 }
 
+// 设置编译后生成的源码目录
 androidComponents.beforeVariants {
     android.sourceSets.register(it.name) {
         val buildDir = layout.buildDirectory.get().asFile
@@ -49,7 +55,7 @@ androidComponents.beforeVariants {
         kotlin.srcDir(buildDir.resolve("generated/source/proto/${it.name}/kotlin"))
     }
 }
-
+// 编译依赖插件
 dependencies {
     api(libs.protobuf.kotlin.lite)
 }

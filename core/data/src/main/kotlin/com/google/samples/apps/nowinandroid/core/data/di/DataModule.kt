@@ -35,10 +35,14 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
+// 实例工厂模块
+// 给Hilt依赖项注入提供默认实例
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DataModule {
 
+    // 使用@Binds绑定依赖比使用@Provides可能更高效
+    // @Provides
     @Binds
     internal abstract fun bindsTopicRepository(
         topicsRepository: OfflineFirstTopicsRepository,

@@ -27,12 +27,16 @@ const val SEARCH_ROUTE = "search_route"
 fun NavController.navigateToSearch(navOptions: NavOptions? = null) = navigate(SEARCH_ROUTE, navOptions)
 
 fun NavGraphBuilder.searchScreen(
+    // 返回事件
     onBackClick: () -> Unit,
+    // 新闻资源点击事件
     onInterestsClick: () -> Unit,
+    // 点击主题事件
     onTopicClick: (String) -> Unit,
 ) {
     // TODO: Handle back stack for each top-level destination. At the moment each top-level
     // destination may have own search screen's back stack.
+    // 查询路由配置
     composable(route = SEARCH_ROUTE) {
         SearchRoute(
             onBackClick = onBackClick,

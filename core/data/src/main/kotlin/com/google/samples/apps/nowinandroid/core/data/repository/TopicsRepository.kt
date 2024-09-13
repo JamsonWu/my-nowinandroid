@@ -20,7 +20,9 @@ import com.google.samples.apps.nowinandroid.core.data.Syncable
 import com.google.samples.apps.nowinandroid.core.model.data.Topic
 import kotlinx.coroutines.flow.Flow
 
+// Topics仓库接口定义
 interface TopicsRepository : Syncable {
+
     /**
      * Gets the available topics as a stream
      */

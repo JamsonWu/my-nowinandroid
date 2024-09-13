@@ -33,7 +33,8 @@ android {
         }
     }
 }
-
+// secrets插件确实支持从多种来源读取敏感信息，包括环境变量和系统属性。
+// 这提供了一种灵活的方式来处理敏感数据，尤其是在自动化构建和部署流程中。
 secrets {
     defaultPropertiesFileName = "secrets.defaults.properties"
 }

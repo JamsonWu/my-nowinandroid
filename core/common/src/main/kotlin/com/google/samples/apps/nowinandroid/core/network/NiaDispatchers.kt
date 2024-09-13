@@ -19,10 +19,15 @@ package com.google.samples.apps.nowinandroid.core.network
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.RUNTIME
 
+// @Qualifier 用来区分具有相同类型但功能不同的bean，常用于依赖注入框架
+// 类型相同但又需要功能不同的实例时，就要加上这个注解
 @Qualifier
+// 在运行时可以反射访问
 @Retention(RUNTIME)
+// 带参数注解，不同参数对应不同的实例
 annotation class Dispatcher(val niaDispatcher: NiaDispatchers)
 
+// 枚举类，提供调度策略标识
 enum class NiaDispatchers {
     Default,
     IO,

@@ -41,27 +41,35 @@ fun LazyListScope.userNewsResourceCardItems(
     itemModifier: Modifier = Modifier,
 ) = items(
     items = items,
-    key = { it.id },
-    itemContent = { userNewsResource ->
-        val resourceUrl = Uri.parse(userNewsResource.url)
-        val backgroundColor = MaterialTheme.colorScheme.background.toArgb()
-        val context = LocalContext.current
-        val analyticsHelper = LocalAnalyticsHelper.current
+    key = { it.id }) {
+    // 遍历新闻列表
+    userNewsResource ->
+    val resourceUrl = Uri.parse(userNewsResource.url)
+    val backgroundColor = MaterialTheme.colorScheme.background.toArgb()
+    // 拿个context这么简单啊
+    val context = LocalContext.current
+    val analyticsHelper = LocalAnalyticsHelper.current
 
-        NewsResourceCardExpanded(
-            userNewsResource = userNewsResource,
-            isBookmarked = userNewsResource.isSaved,
-            hasBeenViewed = userNewsResource.hasBeenViewed,
-            onToggleBookmark = { onToggleBookmark(userNewsResource) },
-            onClick = {
-                analyticsHelper.logNewsResourceOpened(
-                    newsResourceId = userNewsResource.id,
-                )
-                launchCustomChromeTab(context, resourceUrl, backgroundColor)
-                onNewsResourceViewed(userNewsResource.id)
-            },
-            onTopicClick = onTopicClick,
-            modifier = itemModifier,
-        )
-    },
-)
+    // 渲染每条新闻资源数据
+    NewsResourceCardExpanded(
+        userNewsResource = userNewsResource,
+        // 新闻资源是否已收藏
+        isBookmarked = userNewsResource.isSaved,
+        // 新闻资源是否已读
+        hasBeenViewed = userNewsResource.hasBeenViewed,
+        // 收藏事件按钮
+        onToggleBookmark = { onToggleBookmark(userNewsResource) },
+        // 点击事件打开浏览器显示，并设置已读
+        // 点击事件是整个卡片区域
+        onClick = {
+            analyticsHelper.logNewsResourceOpened(
+                newsResourceId = userNewsResource.id,
+            )
+            launchCustomChromeTab(context, resourceUrl, backgroundColor)
+            onNewsResourceViewed(userNewsResource.id)
+        },
+        // 主题点击事件
+        onTopicClick = onTopicClick,
+        modifier = itemModifier,
+    )
+}

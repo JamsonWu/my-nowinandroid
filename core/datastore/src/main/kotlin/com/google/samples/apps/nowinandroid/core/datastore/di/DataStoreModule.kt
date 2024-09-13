@@ -34,26 +34,32 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
-
+// hilt是基于依赖注入框架dagger二次封装，简化使用
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
 
+    // @Provides会自动为UserPreferencesSerializer提供实例
     @Provides
     @Singleton
     internal fun providesUserPreferencesDataStore(
         @ApplicationContext context: Context,
         @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
         @ApplicationScope scope: CoroutineScope,
+        // 这里是如何注入序列化器，Hilt框架会自动实例化
         userPreferencesSerializer: UserPreferencesSerializer,
     ): DataStore<UserPreferences> =
         DataStoreFactory.create(
+            // 指定序列化器
             serializer = userPreferencesSerializer,
+            // 指定协程上下文
             scope = CoroutineScope(scope.coroutineContext + ioDispatcher),
+            // 为啥要定义这个迁移，主要作用是什么
             migrations = listOf(
                 IntToStringIdsMigration,
             ),
         ) {
+            // 定义数据存储文件名
             context.dataStoreFile("user_preferences.pb")
         }
 }

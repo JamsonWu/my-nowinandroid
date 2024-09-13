@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
+// 首先声明使用proto3语法
 syntax = "proto3";
-
+// 导入外部proto文件，注意包名用/分隔
 import "com/google/samples/apps/nowinandroid/data/dark_theme_config.proto";
 import "com/google/samples/apps/nowinandroid/data/theme_brand.proto";
 
+// 指定编译后生成的java代码对应的包名
 option java_package = "com.google.samples.apps.nowinandroid.core.datastore";
+// 生成多个文件
 option java_multiple_files = true;
 
+// 使用消息关键字声明用户偏好
+// = N 等号后面的数字是消息结构定义的每个字段都需要一个唯一标识符，即字段编号
 message UserPreferences {
+    // 字段编号2预留暂不用，以后可能会用
     reserved 2;
+    // 使用repeated说明是可重复，即可存数组、列表等，但其中的字段类型是整数
     repeated int32 deprecated_int_followed_topic_ids = 1;
+    // 只是一个整数，主题变化列表版本号
     int32 topicChangeListVersion = 3;
+    // 只是一个整数，作者变化列表版本号
     int32 authorChangeListVersion = 4;
+    // 只是一个整数，新闻资源变化列表版本号
     int32 newsResourceChangeListVersion = 6;
+
     repeated int32 deprecated_int_followed_author_ids = 7;
+    // 是布尔类型
     bool has_done_int_to_string_id_migration = 8;
     repeated string deprecated_followed_topic_ids = 9;
     repeated string deprecated_followed_author_ids = 10;
@@ -37,14 +49,17 @@ message UserPreferences {
 
     // Each map is used to store a set of string IDs. The bool has no meaning, but proto3 doesn't
     // have a Set type so this is the closest we can get to a Set.
+    // 数据类型可以是Map
     map<string, bool> followed_topic_ids = 13;
     map<string, bool> followed_author_ids = 14;
     map<string, bool> bookmarked_news_resource_ids = 15;
     map<string, bool> viewed_news_resource_ids = 20;
 
+    // 使用外部定义的数据结构类型，是枚举类型
     ThemeBrandProto theme_brand = 16;
+    // 使用外部定义的数据结构类型，是枚举类型
     DarkThemeConfigProto dark_theme_config = 17;
-
+    // onboarding 引导新用户的过程
     bool should_hide_onboarding = 18;
 
     bool use_dynamic_color = 19;

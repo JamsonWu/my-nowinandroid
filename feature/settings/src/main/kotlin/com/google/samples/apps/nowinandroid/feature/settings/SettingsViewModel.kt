@@ -34,12 +34,16 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    // 依赖注入用户喜好本地存储仓库
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
+
     val settingsUiState: StateFlow<SettingsUiState> =
+        // 从本地仓库读取用户配置数据
         userDataRepository.userData
             .map { userData ->
                 Success(
+                    // 将用户配置数据转为设置UI状态对象
                     settings = UserEditableSettings(
                         brand = userData.themeBrand,
                         useDynamicColor = userData.useDynamicColor,
@@ -53,18 +57,21 @@ class SettingsViewModel @Inject constructor(
                 initialValue = Loading,
             )
 
+    // 设置主题标识：默认还是Android
     fun updateThemeBrand(themeBrand: ThemeBrand) {
         viewModelScope.launch {
             userDataRepository.setThemeBrand(themeBrand)
         }
     }
 
+    // 设置深浅色系主题
     fun updateDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
         viewModelScope.launch {
             userDataRepository.setDarkThemeConfig(darkThemeConfig)
         }
     }
 
+    // 更新动态色
     fun updateDynamicColorPreference(useDynamicColor: Boolean) {
         viewModelScope.launch {
             userDataRepository.setDynamicColorPreference(useDynamicColor)
@@ -76,11 +83,15 @@ class SettingsViewModel @Inject constructor(
  * Represents the settings which the user can edit within the app.
  */
 data class UserEditableSettings(
+    // 主题标识
     val brand: ThemeBrand,
+    // 使用动态色
     val useDynamicColor: Boolean,
+    // 暗主题配置：跟随设备配置，浅色系，深色系
     val darkThemeConfig: DarkThemeConfig,
 )
 
+// UI状态定义
 sealed interface SettingsUiState {
     data object Loading : SettingsUiState
     data class Success(val settings: UserEditableSettings) : SettingsUiState

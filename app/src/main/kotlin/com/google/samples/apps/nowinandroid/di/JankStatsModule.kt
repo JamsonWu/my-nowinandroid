@@ -32,6 +32,7 @@ object JankStatsModule {
     @Provides
     fun providesOnFrameListener(): OnFrameListener = OnFrameListener { frameData ->
         // Make sure to only log janky frames.
+        // 标识渲染时间过长的帧，跟踪渲染卡顿位置
         if (frameData.isJank) {
             // We're currently logging this but would better report it to a backend.
             Log.v("NiA Jank", frameData.toString())
@@ -43,6 +44,8 @@ object JankStatsModule {
 
     @Provides
     fun providesJankStats(
+        // 实例化JankStats需要传入两个参数，一个是Activity空口，还有一个是Frame监听器
+        // 在监听器中可以做日志处理，为window追踪Jank指标
         window: Window,
         frameListener: OnFrameListener,
     ): JankStats = JankStats.createAndTrack(window, frameListener)

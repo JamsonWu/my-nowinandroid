@@ -36,12 +36,18 @@ interface NewsResourceDao {
 
     /**
      * Fetches news resources that match the query parameters
+     * CASE
+     *   WHEN 布尔条件 THEN 满足条件时SQL语句
+     *   ELSE 1 （不满足条件时设置为真）
+     * END
+     * 其中SQL语句中的 :XXX中的XXX是函数的入参
+     *
      */
     @Transaction
     @Query(
         value = """
             SELECT * FROM news_resources
-            WHERE 
+            WHERE
                 CASE WHEN :useFilterNewsIds
                     THEN id IN (:filterNewsIds)
                     ELSE 1

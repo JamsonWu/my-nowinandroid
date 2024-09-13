@@ -30,6 +30,7 @@ internal object IntToStringIdsMigration : DataMigration<UserPreferences> {
             // Migrate topic ids
             deprecatedFollowedTopicIds.clear()
             deprecatedFollowedTopicIds.addAll(
+                // 原deprecatedIntFollowedTopicIdsList数据迁移到deprecatedFollowedTopicIds
                 currentData.deprecatedIntFollowedTopicIdsList.map(Int::toString),
             )
             deprecatedIntFollowedTopicIds.clear()

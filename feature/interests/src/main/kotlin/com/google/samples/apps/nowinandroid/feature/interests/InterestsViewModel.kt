@@ -39,11 +39,20 @@ class InterestsViewModel @Inject constructor(
     getFollowableTopics: GetFollowableTopicsUseCase,
 ) : ViewModel() {
 
+    // var selectedTopicId = savedStateHandle.get<String>(TOPIC_ID_ARG)
+    // 读取路由参数方法，路由跳转时相关参数值会存到savedStateHandle对象中
+    // 这里为什么要用StateFlow方式读取被选中的主题Id呢？
+    // 当savedStateHandle中改变TOPIC_ID_ARG的值时uiState能监听到流的变化
     val selectedTopicId: StateFlow<String?> = savedStateHandle.getStateFlow(TOPIC_ID_ARG, null)
 
+    // 合并两个流数据，指定目标类型
     val uiState: StateFlow<InterestsUiState> = combine(
+        // StateFlow 字符串流
+        // 注意合并流时加这个ID字段的作用
         selectedTopicId,
+        // 获取可关注的主题列表，这是一个奇特的类方法，按名称排序
         getFollowableTopics(sortBy = TopicSortField.NAME),
+        //  流中数据转为目标类型
         InterestsUiState::Interests,
     ).stateIn(
         scope = viewModelScope,
@@ -51,12 +60,14 @@ class InterestsViewModel @Inject constructor(
         initialValue = InterestsUiState.Loading,
     )
 
+    // 关注主题
     fun followTopic(followedTopicId: String, followed: Boolean) {
         viewModelScope.launch {
             userDataRepository.setTopicIdFollowed(followedTopicId, followed)
         }
     }
 
+    // 选中某个主题
     fun onTopicClick(topicId: String?) {
         savedStateHandle[TOPIC_ID_ARG] = topicId
     }

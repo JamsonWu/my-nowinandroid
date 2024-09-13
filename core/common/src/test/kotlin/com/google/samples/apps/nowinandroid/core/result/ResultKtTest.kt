@@ -19,7 +19,7 @@ package com.google.samples.apps.nowinandroid.core.result
 import app.cash.turbine.test
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import org.查询外junit.Test
 import kotlin.test.assertEquals
 
 class ResultKtTest {

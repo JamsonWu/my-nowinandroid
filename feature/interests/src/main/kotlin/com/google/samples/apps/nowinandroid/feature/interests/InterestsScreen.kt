@@ -41,6 +41,8 @@ fun InterestsRoute(
     highlightSelectedTopic: Boolean = false,
     viewModel: InterestsViewModel = hiltViewModel(),
 ) {
+    // 使用 by 委托流的getValue方法读取最新状态值
+    // collectAsStateWithLifecycle 生命周期内订阅流
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     InterestsScreen(

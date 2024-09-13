@@ -41,8 +41,14 @@ class CompositeUserNewsResourceRepository @Inject constructor(
     override fun observeAll(
         query: NewsResourceQuery,
     ): Flow<List<UserNewsResource>> =
+        // 新闻资源列表
         newsRepository.getNewsResources(query)
+            // 合并用户数据
             .combine(userDataRepository.userData) { newsResources, userData ->
+                // List<NewsResource>类型下添加扩展函数mapToUserNewsResources实现数据映射
+                // 将List<NewsResource>映射成List<UserNewsResource>
+                // 任何类型都可以添加扩展函数，方便调用
+                // newResources合并userData
                 newsResources.mapToUserNewsResources(userData)
             }
 

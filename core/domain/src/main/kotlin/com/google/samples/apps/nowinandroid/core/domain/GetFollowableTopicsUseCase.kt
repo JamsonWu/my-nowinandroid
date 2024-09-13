@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 /**
+ * 获取主题列表，包含关注状态信息
  * A use case which obtains a list of topics with their followed state.
  */
 class GetFollowableTopicsUseCase @Inject constructor(
@@ -34,8 +35,11 @@ class GetFollowableTopicsUseCase @Inject constructor(
 ) {
     /**
      * Returns a list of topics with their associated followed state.
-     *
+     * operator fun invoke 的好处是可以将这个类的实例当函数调用
+     * 即可以这样调用GetFollowableTopicsUseCase(sortBy=TopicSortField.NAME)类内的invoke函数
      * @param sortBy - the field used to sort the topics. Default NONE = no sorting.
+     * combine函数最后一个参数是函数，可将此函数放在外部，函数体内最后一个参数
+     * combine合并函数用法之一
      */
     operator fun invoke(sortBy: TopicSortField = NONE): Flow<List<FollowableTopic>> = combine(
         userDataRepository.userData,
@@ -48,10 +52,17 @@ class GetFollowableTopicsUseCase @Inject constructor(
                     isFollowed = topic.id in userData.followedTopics,
                 )
             }
+
+        // 枚举条件判断用when语句更优雅
         when (sortBy) {
             NAME -> followedTopics.sortedBy { it.topic.name }
             else -> followedTopics
         }
+
+//        if (sortBy == TopicSortField.NAME)
+//            followedTopics.sortedBy { it.topic.name }
+//        else followedTopics
+
     }
 }
 

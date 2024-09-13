@@ -30,6 +30,7 @@ import kotlin.reflect.KClass
 
 /**
  * An entry point to retrieve the [HiltWorkerFactory] at runtime
+ * 运行时提取HiltWorkerFactory实例
  */
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -42,15 +43,20 @@ private const val WORKER_CLASS_NAME = "RouterWorkerDelegateClassName"
 /**
  * Adds metadata to a WorkRequest to identify what [CoroutineWorker] the [DelegatingWorker] should
  * delegate to
+ * out说明是协变，可以接受任何 CoroutineWorker 的子类
+ * KClass代表是kotlin的反射
+ * 即可以给CoroutineWorker子类添加扩展函数delegatedData
+ * 实现：给某个类的所有子类添加扩展方法
  */
 internal fun KClass<out CoroutineWorker>.delegatedData() =
     Data.Builder()
+        // qualifiedName 是完整类名
         .putString(WORKER_CLASS_NAME, qualifiedName)
         .build()
 
 /**
  * A worker that delegates sync to another [CoroutineWorker] constructed with a [HiltWorkerFactory].
- *
+ * 动态创建 worker
  * This allows for creating and using [CoroutineWorker] instances with extended arguments
  * without having to provide a custom WorkManager configuration that the app module needs to utilize.
  *
@@ -62,10 +68,13 @@ class DelegatingWorker(
     workerParams: WorkerParameters,
 ) : CoroutineWorker(appContext, workerParams) {
 
+    // 获取真实Worker类名
     private val workerClassName =
         workerParams.inputData.getString(WORKER_CLASS_NAME) ?: ""
 
+    // 根据传入的workerClass动态创建worker
     private val delegateWorker =
+        // 通过EntryPointAccessors来获取HiltWorkerFactoryEntryPoint实例，从而拿到hiltWorkerFactory工厂
         EntryPointAccessors.fromApplication<HiltWorkerFactoryEntryPoint>(appContext)
             .hiltWorkerFactory()
             .createWorker(appContext, workerClassName, workerParams)
@@ -76,5 +85,6 @@ class DelegatingWorker(
         delegateWorker.getForegroundInfo()
 
     override suspend fun doWork(): Result =
+        // 调用真实worker的doWork方法
         delegateWorker.doWork()
 }

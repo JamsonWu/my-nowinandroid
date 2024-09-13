@@ -54,15 +54,21 @@ class ForYouViewModel @Inject constructor(
     private val shouldShowOnboarding: Flow<Boolean> =
         userDataRepository.userData.map { !it.shouldHideOnboarding }
 
-    val deepLinkedNewsResource = savedStateHandle.getStateFlow<String?>(
+    val deepLinkedNewsResource =
+        // 根据KEY读取最新值
+        savedStateHandle.getStateFlow<String?>(
         key = LINKED_NEWS_RESOURCE_ID,
         null,
     )
+        // 返回最新流
         .flatMapLatest { newsResourceId ->
+            // 如果为空，则返回空流
             if (newsResourceId == null) {
                 flowOf(emptyList())
             } else {
+                // 根据新闻ID查询新闻
                 userNewsResourceRepository.observeAll(
+                    // 查询参数
                     NewsResourceQuery(
                         filterNewsIds = setOf(newsResourceId),
                     ),

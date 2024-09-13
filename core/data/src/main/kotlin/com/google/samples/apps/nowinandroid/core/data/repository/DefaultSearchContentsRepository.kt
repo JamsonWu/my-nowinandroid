@@ -47,6 +47,7 @@ internal class DefaultSearchContentsRepository @Inject constructor(
     override suspend fun populateFtsData() {
         withContext(ioDispatcher) {
             newsResourceFtsDao.insertAll(
+                // 读取最新的一条
                 newsResourceDao.getNewsResources(
                     useFilterTopicIds = false,
                     useFilterNewsIds = false,
@@ -61,20 +62,27 @@ internal class DefaultSearchContentsRepository @Inject constructor(
     override fun searchContents(searchQuery: String): Flow<SearchResult> {
         // Surround the query by asterisks to match the query when it's in the middle of
         // a word
+        // 查询新闻资源Ids
         val newsResourceIds = newsResourceFtsDao.searchAllNewsResources("*$searchQuery*")
+        // 获取主题Ids
         val topicIds = topicFtsDao.searchAllTopics("*$searchQuery*")
 
         val newsResourcesFlow = newsResourceIds
+            // 转换为不重复的Set列表
             .mapLatest { it.toSet() }
             .distinctUntilChanged()
             .flatMapLatest {
+                // 根据id获取资源列表
                 newsResourceDao.getNewsResources(useFilterNewsIds = true, filterNewsIds = it)
             }
+        // 基于主题的思路也一样
         val topicsFlow = topicIds
             .mapLatest { it.toSet() }
             .distinctUntilChanged()
             .flatMapLatest(topicDao::getTopicEntities)
+        // 合并流数据
         return combine(newsResourcesFlow, topicsFlow) { newsResources, topics ->
+            // 查询结果包含主题列表与新闻资源列表
             SearchResult(
                 topics = topics.map { it.asExternalModel() },
                 newsResources = newsResources.map { it.asExternalModel() },

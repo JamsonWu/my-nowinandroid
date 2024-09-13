@@ -23,6 +23,7 @@ import androidx.room.Index
 
 /**
  * Cross reference for many to many relationship between [NewsResourceEntity] and [TopicEntity]
+ * 跨表多对多映射表实体
  */
 @Entity(
     tableName = "news_resources_topics",

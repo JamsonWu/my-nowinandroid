@@ -25,6 +25,7 @@ import android.net.NetworkRequest
 import android.net.NetworkRequest.Builder
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import android.util.Log
 import androidx.core.content.getSystemService
 import androidx.tracing.trace
 import com.google.samples.apps.nowinandroid.core.network.Dispatcher
@@ -43,7 +44,9 @@ internal class ConnectivityManagerNetworkMonitor @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
 ) : NetworkMonitor {
     override val isOnline: Flow<Boolean> = callbackFlow {
+        Log.d("trace", ":开始追踪 ")
         trace("NetworkMonitor.callbackFlow") {
+            Log.d("trace", ":进入追踪 ")
             val connectivityManager = context.getSystemService<ConnectivityManager>()
             if (connectivityManager == null) {
                 channel.trySend(false)
