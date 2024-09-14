@@ -64,6 +64,7 @@ kotlinVersion = "1.9.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 material = "1.10.0"
+lifecycleRuntimeKtx = "2.8.6"
 
 #依赖集合
 [bundles]
@@ -168,6 +169,9 @@ room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", vers
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 
 #构建插件版本配置
 [plugins]

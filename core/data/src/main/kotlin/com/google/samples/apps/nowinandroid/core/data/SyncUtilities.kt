@@ -19,6 +19,7 @@ package com.google.samples.apps.nowinandroid.core.data
 import android.util.Log
 import com.google.samples.apps.nowinandroid.core.datastore.ChangeListVersions
 import com.google.samples.apps.nowinandroid.core.network.model.NetworkChangeList
+import kotlinx.coroutines.async
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -96,24 +97,45 @@ suspend fun Synchronizer.changeListSync(
     modelDeleter: suspend (List<String>) -> Unit,
     modelUpdater: suspend (List<String>) -> Unit,
 ) = suspendRunCatching {
+    // 第一步：读取当前版本号
     // Fetch the change list since last sync (akin to a git fetch)
-    // 获取当前版本
+    // 获取当前版本，这个versionReader是属性的setter函数
+    // getChangeListVersions是从本地的preference中读取当前版本号数据，这是个异步方法
     val currentVersion = versionReader(getChangeListVersions())
+    // 第二步：根据当前版本号读取服务器变化的数据列表
+    // 这是异步方法，但下面的代码却是同步逻辑
+    // 原因是数据同步的逻辑代码是封装在 awaitAll( async{处理})内，实现并行同步处理代码
+    // val syncedSuccessfully = kotlinx.coroutines.awaitAll(
+    //    async { topicRepository.sync() },
+    //    async { newsRepository.sync() },
+    // ).all { it }
+    // 调用接口返回服务器变化列表
+
     val changeList = changeListFetcher(currentVersion)
+    // 如果返回变化列表为空，则从当前方法退出
     if (changeList.isEmpty()) return@suspendRunCatching true
 
+    // 第三步：分离出服务器已删除的数据ID列表与已更新的数据ID列表
     // 被删除了 要求更新
     // 对changeList进行分隔，第1个字段是被删除列表，第2个字段是更
+    // 对返回结果使用partition函数对数据进行分离，对于满足条件的数据放在Pair对象中的first字段上
+    // 不足足条件的数据放在Pair对象上的second字段上
+    // Pair就是一个存储两个字段的对象
     val (deleted, updated) = changeList.partition(NetworkChangeList::isDelete)
 
+    // 第四步：从本地删除服务器中已删除的数据列表
     // Delete models that have been deleted server-side
     // 传参需要删除的ID列表
+    // 接口返回已删除的列表，对deleted变化的对象列表分离出其id列表
+    // 注意::是函数引用，但这里只是一个id字段，事实上是引用id属性字段所对应的getter函数
     modelDeleter(deleted.map(NetworkChangeList::id))
+    // 第五步：根据服务器已更新的ID列表调用后台接口返回更新的数据列表并更新本地数据库
 
     // Using the change list, pull down and save the changes (akin to a git pull)
     // 传参需要更新的列表ID
     modelUpdater(updated.map(NetworkChangeList::id))
 
+    // 第六步：获取变化列表最后一个版本号然后更新本地的版本号
     // Update the last synced version (akin to updating local git HEAD)
     // 获取变化列表最后一个版本号
     val latestVersion = changeList.last().changeListVersion

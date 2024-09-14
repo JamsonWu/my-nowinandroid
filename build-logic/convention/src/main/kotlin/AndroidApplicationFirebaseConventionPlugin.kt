@@ -28,8 +28,11 @@ class AndroidApplicationFirebaseConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 // Google服务插件、性能监控插件和崩溃报告插件
+                // 核心插件，用于读取和应用 google-services.json 文件中的配置信息。
                 apply("com.google.gms.google-services")
+                // 性能监控插件，帮助您监控应用的性能。
                 apply("com.google.firebase.firebase-perf")
+                // 崩溃报告插件，帮助您捕获和分析应用的崩溃日志
                 apply("com.google.firebase.crashlytics")
             }
 

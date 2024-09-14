@@ -26,11 +26,15 @@ import javax.inject.Inject
 
 /**
  * [Application] class for NiA
+ * Context applicationContext 就是 NiaApplication 的实例
+ * 这个Context会注入到hilt框架中，那么在依赖注入时就可以直接使用@ApplicationContext注解即可直接注入
  */
 @HiltAndroidApp
 class NiaApplication : Application(), ImageLoaderFactory {
     // 图片加载器imageLoader依赖注入，在NetWorkModule提供依赖项
     // 注入的图片加载器是用于加载Svg图片的
+    // 使用dagger.Lazy<T>可以延迟实例化直至首次调用get方法才进行实例化
+    // 这么做的目的是对象仅当需要时才创建
     @Inject
     lateinit var imageLoader: dagger.Lazy<ImageLoader>
 
@@ -46,6 +50,23 @@ class NiaApplication : Application(), ImageLoaderFactory {
     }
 
     // 调用newImageLoader()来获取一个图片加载器
-    // UI加载图片是用哪个组件呢？ todo...
-    override fun newImageLoader(): ImageLoader = imageLoader.get()
+    // 当调用newImageLoader来创建实例时才会调用imageLoader的get方法来真正进行实例化
+    // 在哪里调用呢？在Coil单例对象newImageLoader方法中调用
+    // Coil是什么？Coil是Android高性能图像加载库，支持协程与Composable等
+    // @Synchronized
+    // private fun newImageLoader(context: Context): ImageLoader {
+    //    // Check again in case imageLoader was just set.
+    //    Coil.imageLoader?.let { return it }
+    //    // Create a new ImageLoader.
+    //    val newImageLoader = imageLoaderFactory?.newImageLoader()
+    //        ?: (context.applicationContext as? ImageLoaderFactory)?.newImageLoader()
+    //        ?: ImageLoader(context)
+    //    imageLoaderFactory = null
+    //    Coil.imageLoader = newImageLoader
+    //    return newImageLoader
+    // }
+    override fun newImageLoader(): ImageLoader {
+        return imageLoader.get()
+    }
+
 }

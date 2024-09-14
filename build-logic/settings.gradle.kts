@@ -20,6 +20,8 @@ dependencyResolutionManagement {
         mavenCentral()
     }
     // 指定版本目录
+    // 为什么build-logic项目需要手动配置版本目录，而其它模块不用
+    // 原因是：build-logic是独立的gradle项目
     versionCatalogs {
         create("libs") {
             // 来自于上级目录下的libs.versions.toml的文件配置

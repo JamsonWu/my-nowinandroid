@@ -94,12 +94,10 @@ class MainActivity : ComponentActivity() {
     // 还可以实现懒加载功能，当首次使用viewModel属性时才会实例化
     val viewModel: MainActivityViewModel by viewModels()
 
-
     // savedInstanceState 这个实例状态主要保存什么值，主要作用？
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-
         // 定义ui状态，默认值是Loading
         // 这里只是定义一个当前ui可变状态，状态可重新赋值ui
         var uiState: MainActivityUiState by mutableStateOf(Loading)

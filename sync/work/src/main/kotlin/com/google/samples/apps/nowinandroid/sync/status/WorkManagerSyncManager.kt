@@ -32,24 +32,34 @@ import javax.inject.Inject
 
 /**
  * [SyncManager] backed by [WorkInfo] from [WorkManager]
+ *
  */
 internal class WorkManagerSyncManager @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : SyncManager {
+    // 从WorkManager获取当前同步的状态，判断是否正在同步中
     override val isSyncing: Flow<Boolean> =
+        // getWorkInfosForUniqueWorkFlow 返回作业任务链中WorkInfo
         WorkManager.getInstance(context).getWorkInfosForUniqueWorkFlow(SYNC_WORK_NAME)
+            // 检查WorkInfo列表中是否有正在运行中的状态
             .map(List<WorkInfo>::anyRunning)
             .conflate()
 
+    // 这个方法提供给消息接收时调用
     override fun requestSync() {
+        // 基于Context创建后台任务管理器 WorkManger
         val workManager = WorkManager.getInstance(context)
         // Run sync on app startup and ensure only one sync worker runs at any time
+        // 创建唯一作业任务
         workManager.enqueueUniqueWork(
+            // 定义一个同步任务名称，通过这个名称可以知道作业任务的实时状态
             SYNC_WORK_NAME,
+            // 如果已存在同名的任务，则什么也不做，让原先任务继续
             ExistingWorkPolicy.KEEP,
+            // 具体作业任务
             SyncWorker.startUpSyncWork(),
         )
     }
 }
-
+// 使用 any 来检查列表是否至少有一项是满足条件的
 private fun List<WorkInfo>.anyRunning() = any { it.state == State.RUNNING }

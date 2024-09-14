@@ -30,6 +30,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Call
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import javax.inject.Singleton
@@ -47,15 +48,18 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun providesDemoAssetManager(
+        // @ApplicationContext是hilt框架提供的，加上这个注解
+        // 实现依赖注入Context
         @ApplicationContext context: Context,
     ): DemoAssetManager = DemoAssetManager(context.assets::open)
 
     @Provides
     @Singleton
+    // 创建网络请求工厂实例 Call.Factory，因为OkHttpClient也实现了接口Call.Factory
     fun okHttpCallFactory(): Call.Factory = trace("NiaOkHttpClient") {
         // http通讯
         OkHttpClient.Builder()
-            // 添加日志拦截器
+            // 1.添加日志拦截器
             .addInterceptor(
                 HttpLoggingInterceptor()
                     .apply {
@@ -64,6 +68,33 @@ internal object NetworkModule {
                         }
                     },
             )
+
+            //  匿名类实现添加header的传统写法
+            //    .addInterceptor(object : Interceptor {
+            //        override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+            //            val originalRequest = chain.request()
+            //            val newRequest = originalRequest.newBuilder()
+            //                .header("Authorization", "Bearer YOUR_TOKEN")
+            //                .header("Accept", "application/json")
+            //                .build()
+            //            return chain.proceed(newRequest)
+            //        }
+            //    })
+
+            // 2.匿名类实现添加header的简便写法-Lambda表达式
+            // 需要创建一个保存token的单例，
+            .addInterceptor(
+                Interceptor { chain ->
+                    val original = chain.request()
+                    // 创建一个新的请求，并添加自定义的Header
+                    val newRequest = original.newBuilder()
+                        .header("Authorization", "Bearer YOUR_TOKEN")
+                        .build()
+                    // 继续执行链中的下一个拦截器
+                    chain.proceed(newRequest)
+                }
+            )
+
             .build()
     }
 
@@ -82,17 +113,33 @@ internal object NetworkModule {
         @ApplicationContext application: Context,
     ): ImageLoader = trace("NiaImageLoader") {
         ImageLoader.Builder(application)
+            // ImageLoader 添加http请求实例
+            // 设置网络请求工厂，传递http请求的实例
             .callFactory { okHttpCallFactory.get() }
+            // ImageLoader添加Svg解码器
             // 解析Svg
-            .components { add(SvgDecoder.Factory()) }
+            .components {
+                // 添加Svg解码器工厂
+                add(SvgDecoder.Factory())
+                // 添加自定义的图片格式解码器工厂。。。
+            }
+            // 设置请求头缓存
             // Assume most content images are versioned urls
             // but some problematic images are fetching each time
             .respectCacheHeaders(false)
+            // 这里使用 apply 的原因是 apply的 Lambda表达式要
+            // 调用ImageLoader.Builder(application)实例内的logger方法
+            // 从而实现了链式调用
             .apply {
+                // 因为加了一个判断条件，所以才需要用到 apply
+                // BuildConfig是哪来的？
+                // BuildConfig.DEBUG在哪里配置的？
                 if (BuildConfig.DEBUG) {
+                    // logger函数是ImageLoader.Builder类提供供的
                     logger(DebugLogger())
                 }
             }
+
             .build()
     }
 }

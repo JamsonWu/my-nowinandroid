@@ -36,12 +36,17 @@ import javax.inject.Inject
 class DemoNiaNetworkDataSource @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val networkJson: Json,
+    // 在单元测试中使用这个默认值JvmUnitTestDemoAssetManager
+    // 但实际使用在NetworkModule中进行实例化：DemoAssetManager(context.assets::open)
     private val assets: DemoAssetManager = JvmUnitTestDemoAssetManager,
 ) : NiaNetworkDataSource {
 
+    // 因指定返回类型为List<NetworkTopic>，所以json解析时会解析成这个对象类型
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun getTopics(ids: List<String>?): List<NetworkTopic> =
+        // 将代码切换到指定的协程调度器
         withContext(ioDispatcher) {
+            // 使用 use 可以自动关闭资源
             assets.open(TOPICS_ASSET).use(networkJson::decodeFromStream)
         }
 
@@ -57,6 +62,7 @@ class DemoNiaNetworkDataSource @Inject constructor(
     override suspend fun getNewsResourceChangeList(after: Int?): List<NetworkChangeList> =
         getNewsResources().mapToChangeList(NetworkNewsResource::id)
 
+    // 使用 companion object声明常量，说明这些常是与类相关的，而不是类实例相关联的。类似于java的静态方法
     companion object {
         private const val NEWS_ASSET = "news.json"
         private const val TOPICS_ASSET = "topics.json"

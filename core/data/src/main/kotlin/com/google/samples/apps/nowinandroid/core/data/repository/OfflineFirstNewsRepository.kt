@@ -16,6 +16,7 @@
 
 package com.google.samples.apps.nowinandroid.core.data.repository
 
+import android.util.Log
 import com.google.samples.apps.nowinandroid.core.data.Synchronizer
 import com.google.samples.apps.nowinandroid.core.data.changeListSync
 import com.google.samples.apps.nowinandroid.core.data.model.asEntity
@@ -63,12 +64,22 @@ internal class OfflineFirstNewsRepository @Inject constructor(
     )
         .map { it.map(PopulatedNewsResource::asExternalModel) }
 
+    // 哪里注入synchronizer实例
+    // Synchronizer接口定义了sync方法，在这个方法里传递了对象实例
+    // NewsRepository实现了接口 Syncable
+    // 而Synchronizer接口给Syncable添加了一个扩展函数sync
+    // 谁调用了Syncable.sync函数？从而调用了syncWith函数
+    // 调用仓库的sync方法时间隔调用了这个syncWith函数，从而实现具体同步业务
+    // 写得真真绕，有点复杂
+    // 第一步是仓库实现同步接口，即实现Syncable.syncWith方法
+    //
     override suspend fun syncWith(synchronizer: Synchronizer): Boolean {
         var isFirstSync = false
         return synchronizer.changeListSync(
             versionReader = ChangeListVersions::newsResourceVersion,
             changeListFetcher = { currentVersion ->
                 isFirstSync = currentVersion <= 0
+                Log.d("getNewsResource", "syncWith: ")
                 network.getNewsResourceChangeList(after = currentVersion)
             },
             versionUpdater = { latestVersion ->

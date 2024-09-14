@@ -25,6 +25,8 @@ import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.google.samples.apps.nowinandroid.PACKAGE_NAME
 import com.google.samples.apps.nowinandroid.allowNotifications
+import com.google.samples.apps.nowinandroid.foryou.forYouScrollFeedDownUp
+import com.google.samples.apps.nowinandroid.foryou.forYouSelectTopics
 import com.google.samples.apps.nowinandroid.foryou.forYouWaitForContent
 import com.google.samples.apps.nowinandroid.startActivityAndAllowNotifications
 import org.junit.Rule
@@ -56,6 +58,8 @@ class StartupBenchmark {
     @Test
     fun startupFullyPrecompiled() = startup(CompilationMode.Full())
 
+
+
     private fun startup(compilationMode: CompilationMode) = benchmarkRule.measureRepeated(
         packageName = PACKAGE_NAME,
         metrics = listOf(StartupTimingMetric()),
@@ -71,5 +75,9 @@ class StartupBenchmark {
         startActivityAndAllowNotifications()
         // Waits until the content is ready to capture Time To Full Display
         forYouWaitForContent()
+        // forYouWaitForContent()
+        forYouSelectTopics()
+        forYouScrollFeedDownUp()
     }
 }
+

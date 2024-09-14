@@ -19,6 +19,7 @@ package com.google.samples.apps.nowinandroid.feature.foryou
 import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import android.util.Log
 import androidx.activity.compose.ReportDrawnWhen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -120,6 +121,8 @@ internal fun ForYouRoute(
     val feedState by viewModel.feedState.collectAsStateWithLifecycle()
     val isSyncing by viewModel.isSyncing.collectAsStateWithLifecycle()
     val deepLinkedUserNewsResource by viewModel.deepLinkedNewsResource.collectAsStateWithLifecycle()
+
+
 
     // ForYou页面实现，不会直接引用ViewModel实现关注点分离，组件内可维护内部的状态
     // 只关心UI实现

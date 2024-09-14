@@ -26,7 +26,7 @@ android {
     defaultConfig {
         minSdk = 28
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "DEVICE"
         buildConfigField("String", "APP_BUILD_TYPE_SUFFIX", "\"\"")
     }
 
@@ -62,7 +62,7 @@ baselineProfile {
     managedDevices += "pixel6Api33"
 
     // Don't use a connected device but rely on a GMD for consistency between local and CI builds.
-    useConnectedDevices = false
+    useConnectedDevices = true
 
 }
 

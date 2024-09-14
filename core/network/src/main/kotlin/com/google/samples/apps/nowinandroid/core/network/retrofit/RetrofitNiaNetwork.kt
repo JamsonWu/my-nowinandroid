@@ -51,15 +51,16 @@ private interface RetrofitNiaNetworkApi {
     @GET(value = "changelists/topics")
     suspend fun getTopicChangeList(
         @Query("after") after: Int?,
-    ): List<NetworkChangeList>
+    ): NetworkResponse<List<NetworkChangeList>>
 
     @GET(value = "changelists/newsresources")
     suspend fun getNewsResourcesChangeList(
         @Query("after") after: Int?,
-    ): List<NetworkChangeList>
+    ): NetworkResponse<List<NetworkChangeList>>
 }
-
-private const val NIA_BASE_URL = BuildConfig.BACKEND_URL
+// 编译时就确定的常量
+//
+private val NIA_BASE_URL = BuildConfig.BACKEND_URL
 
 /**
  * Wrapper for data provided from the [NIA_BASE_URL]
@@ -68,6 +69,8 @@ private const val NIA_BASE_URL = BuildConfig.BACKEND_URL
 private data class NetworkResponse<T>(
     val data: T,
 )
+
+
 
 /**
  * [Retrofit] backed [NiaNetworkDataSource]
@@ -80,6 +83,7 @@ internal class RetrofitNiaNetwork @Inject constructor(
     networkJson: Json,
     okhttpCallFactory: dagger.Lazy<Call.Factory>,
 ) : NiaNetworkDataSource {
+
 
     // trace会记录操作开始与结束时间及任何可能发生的异常
     private val networkApi = trace("RetrofitNiaNetwork") {
@@ -107,8 +111,9 @@ internal class RetrofitNiaNetwork @Inject constructor(
         networkApi.getNewsResources(ids = ids).data
 
     override suspend fun getTopicChangeList(after: Int?): List<NetworkChangeList> =
-        networkApi.getTopicChangeList(after = after)
+       networkApi.getTopicChangeList(after = after).data
+
 
     override suspend fun getNewsResourceChangeList(after: Int?): List<NetworkChangeList> =
-        networkApi.getNewsResourcesChangeList(after = after)
+        networkApi.getNewsResourcesChangeList(after = after).data
 }

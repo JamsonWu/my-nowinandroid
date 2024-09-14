@@ -40,12 +40,5 @@ internal object DatabaseModule {
         context,
         NiaDatabase::class.java,
         "nia-database",
-    )
-        .addCallback(object : RoomDatabase.Callback(){
-            override fun onOpen(db: SupportSQLiteDatabase) {
-                super.onOpen(db)
-            }
-        })
-        // .addInterceptor(QueryLoggingInterceptor())
-        .build()
+    ).build()
 }

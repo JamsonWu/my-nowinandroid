@@ -38,7 +38,7 @@ data class TopicEntity(
     @ColumnInfo(defaultValue = "")
     val url: String,
     @ColumnInfo(defaultValue = "")
-    val imageUrl: String,
+    val imageUrl: String
 )
 // 扩展实体
 fun TopicEntity.asExternalModel() = Topic(

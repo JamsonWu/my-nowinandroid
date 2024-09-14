@@ -17,6 +17,7 @@
 pluginManagement {
     // 这行代码告诉Gradle去包含位于build-logic目录下的另一个构建项目。
     // 这个子项目通常包含了共享的构建逻辑，如自定义插件、任务、配置等。
+    // 在build-logic模块中配置了版本目录。
     includeBuild("build-logic")
     repositories {
         // google的maven仓库
@@ -42,6 +43,7 @@ dependencyResolutionManagement {
 rootProject.name = "nowinandroid"
 // 加上这一行代码，引用子模块依赖时就可以直接使用 projects.core.data 这种简化方式来引用了
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+// 配置包含哪些模块
 // 子项目定义
 include(":app")
 include(":app-nia-catalog")
@@ -73,4 +75,3 @@ include(":lint")
 include(":sync:work")
 include(":sync:sync-test")
 include(":ui-test-hilt-manifest")
-include(":mylibrary")

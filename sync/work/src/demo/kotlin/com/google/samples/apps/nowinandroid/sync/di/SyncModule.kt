@@ -25,6 +25,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
+// Demo版本同步实例化工厂
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class SyncModule {

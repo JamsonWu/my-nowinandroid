@@ -29,6 +29,7 @@ object Sync {
     fun initialize(context: Context) {
         // 获取WorkManager实例
         WorkManager.getInstance(context).apply {
+            // 使用apply，{}内的作用域是WorkManager
             // Run sync on app startup and ensure only one sync worker runs at any time
             // App启动时唯一任务入队
             enqueueUniqueWork(
@@ -40,6 +41,19 @@ object Sync {
                 SyncWorker.startUpSyncWork(),
             )
         }
+
+        // 链式调用，与上面一种方法是等效的
+        //        WorkManager.getInstance(context)
+        //            // Run sync on app startup and ensure only one sync worker runs at any time
+        //            // 创建唯一作业任务
+        //            .enqueueUniqueWork(
+        //                // 定义一个同步任务名称，通过这个名称可以知道作业任务的实时状态
+        //                SYNC_WORK_NAME,
+        //                // 如果已存在同名的任务，则什么也不做，让原先任务继续
+        //                ExistingWorkPolicy.KEEP,
+        //                // 具体作业任务
+        //                SyncWorker.startUpSyncWork(),
+        //            )
     }
 }
 

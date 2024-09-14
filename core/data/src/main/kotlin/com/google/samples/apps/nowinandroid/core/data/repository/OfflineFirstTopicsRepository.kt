@@ -60,6 +60,7 @@ internal class OfflineFirstTopicsRepository @Inject constructor(
 
     override suspend fun syncWith(synchronizer: Synchronizer): Boolean =
         // 调用通用的同步管理器模板方法
+
         synchronizer.changeListSync(
             // 1.回调函数：获取当前版本号
             // 引用属性topicVersion的getter方法
@@ -73,6 +74,7 @@ internal class OfflineFirstTopicsRepository @Inject constructor(
             // 定义获取变化列表数据回调函数
             // 注意这里回调函数的声明方式：currentVersion是入参 ->后面是函数体
             changeListFetcher = { currentVersion ->
+                // Lambda表达式如果没有显示调用return返回，那么最后一行代码将会作为返回值返回
                 network.getTopicChangeList(after = currentVersion)
             },
             // 3.回调函数：更新topic版本号到本地

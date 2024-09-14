@@ -24,6 +24,7 @@ import javax.inject.Inject
 
 private const val SYNC_TOPIC_SENDER = "/topics/sync"
 
+// 生产环境接收firebase平台消息
 @AndroidEntryPoint
 internal class SyncNotificationsService : FirebaseMessagingService() {
 
@@ -32,6 +33,7 @@ internal class SyncNotificationsService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         if (SYNC_TOPIC_SENDER == message.from) {
+            // 当平台收到的消息是要求同步，则调用数据同步
             syncManager.requestSync()
         }
     }

@@ -25,11 +25,14 @@ plugins {
     id("com.google.android.gms.oss-licenses-plugin")
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.roborazzi)
+    // 管理应用程序的敏感信息，会将secrets指定的属性配置文件加入到BuildConfig对象中
+     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
+    // 默认配置都是预定义参数
     defaultConfig {
-        // 应用包名，用于标识应用
+        // 应用包名，用于标识应用,BuildConfig 会包含这个字段
         applicationId = "com.google.samples.apps.nowinandroid"
         // 应用版本，内部更新使用
         versionCode = 8
@@ -45,7 +48,20 @@ android {
         }
     }
     buildFeatures {
+        // 是否开启生成 BuildConfig 配置类
         buildConfig = true
+        // 其中DEBUG,BUILD_TYPE,FLAVOR是根据编译相关配置自动加入的
+        // LOG_ROOM_SQL 是使用buildConfigField手动添加的自定义项
+        //public final class BuildConfig {
+        //    public static final boolean DEBUG = Boolean.parseBoolean("true");
+        //    public static final String APPLICATION_ID = "com.google.samples.apps.nowinandroid.demo.debug";
+        //    public static final String BUILD_TYPE = "debug";
+        //    public static final String FLAVOR = "demo";
+        //    public static final int VERSION_CODE = 8;
+        //    public static final String VERSION_NAME = "0.1.2";
+        //    // Field from build type: debug
+        //    public static final boolean LOG_ROOM_SQL = true;
+        //}
     }
 
     buildTypes {
@@ -70,6 +86,7 @@ android {
             // 签名配置
             signingConfig = signingConfigs.named("debug").get()
             // Ensure Baseline Profile is fresh for release builds.
+            // 在构建时自动生成基准配置文件
             baselineProfile.automaticGenerationDuringBuild = true
         }
     }
@@ -90,6 +107,9 @@ android {
     namespace = "com.google.samples.apps.nowinandroid"
 }
 
+secrets {
+   defaultPropertiesFileName = "secrets.defaults.properties"
+}
 dependencies {
     implementation(projects.feature.interests)
     implementation(projects.feature.foryou)

@@ -17,7 +17,7 @@
 package com.google.samples.apps.nowinandroid.core.network.demo
 
 import java.io.InputStream
-
+// 声明函数式接口，只能有一个抽象方法
 fun interface DemoAssetManager {
     fun open(fileName: String): InputStream
 }

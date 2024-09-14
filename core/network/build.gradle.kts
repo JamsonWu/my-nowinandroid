@@ -32,9 +32,24 @@ android {
             isIncludeAndroidResources = true
         }
     }
+
+    // 配置不同环境后台服务地址
+    buildTypes {
+        debug {
+            secrets {
+                propertiesFileName = "secrets.debug.properties"
+            }
+        }
+        release {
+            secrets {
+                propertiesFileName = "secrets.release.properties"
+            }
+        }
+    }
 }
 // secrets插件确实支持从多种来源读取敏感信息，包括环境变量和系统属性。
 // 这提供了一种灵活的方式来处理敏感数据，尤其是在自动化构建和部署流程中。
+// 密钥配置，相关配置参数在属性文件中定义，编译后会添加到BuildConfig对象中
 secrets {
     defaultPropertiesFileName = "secrets.defaults.properties"
 }
