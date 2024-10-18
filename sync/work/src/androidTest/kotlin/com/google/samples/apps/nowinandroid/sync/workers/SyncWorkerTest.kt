@@ -33,10 +33,19 @@ import kotlin.test.assertEquals
 @HiltAndroidTest
 class SyncWorkerTest {
 
+    // 定义最外层测试规则：当测试运行时会应用所设置的规则，这个规则是实现依赖注入功能
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-    private val context get() = InstrumentationRegistry.getInstrumentation().context
+
+    // context与targetcontext对比分析
+    // targetContext：这里是指被测试应用的上下文，主要用于访问目标应的资源文件，当需要模拟用户操作时才需要这个
+    // private val mcontext
+    //    get() = InstrumentationRegistry.getInstrumentation().targetContext
+
+    // 定义应用上下文属性 context：这里是指测试应用本身的上下文，用于代码测试
+    private val context
+        get() = InstrumentationRegistry.getInstrumentation().context
 
     @Before
     fun setup() {
@@ -46,30 +55,42 @@ class SyncWorkerTest {
             .build()
 
         // Initialize WorkManager for instrumentation tests.
+        // 初始化测试用的WorkManager
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
     @Test
     fun testSyncWork() {
         // Create request
+        // 创建一次性的工作任务：可以定义任务的执行条件、输入数据、约束条件等
         val request = SyncWorker.startUpSyncWork()
 
         val workManager = WorkManager.getInstance(context)
+        // 测试驱动主要用于设置在测试上下文忽略一些约束条件，即测试时默认相关条件都满足
+        // 由于getTestDriver返回值是可空对象，所以这里要求进行强制转为非空，当为空时会报空指针
         val testDriver = WorkManagerTestInitHelper.getTestDriver(context)!!
 
         // Enqueue and wait for result.
+        // 将一次性的工作任务发给workManager进行调度执行
+        // result是Future对象代表异步计算结果
+        // 入队执行等待入队结果：阻塞当前线程直到入队完成
         workManager.enqueue(request).result.get()
 
         // Get WorkInfo and outputData
+        // 阻塞当前线程，直到获取到入队信息，此时任务已入队但未被执行
         val preRunWorkInfo = workManager.getWorkInfoById(request.id).get()
 
-        // Assert
+        // Assert 校验
         assertEquals(WorkInfo.State.ENQUEUED, preRunWorkInfo.state)
 
         // Tells the testing framework that the constraints have been met
+        // 告知当前测试环境满足所有约束条件，即不会验证相关设置的约束条件
         testDriver.setAllConstraintsMet(request.id)
 
+        // 再次获取链路上的WorkInfo
+        // 阻塞当前线程，入队在之前已完成同时任务应该已经开始运行，读取当前WorkInfo
         val postRequirementWorkInfo = workManager.getWorkInfoById(request.id).get()
+        // 判断任务是否正在运行中
         assertEquals(WorkInfo.State.RUNNING, postRequirementWorkInfo.state)
     }
 }

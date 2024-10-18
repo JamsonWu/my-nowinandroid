@@ -26,8 +26,9 @@ android {
     defaultConfig {
         minSdk = 28
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "DEVICE"
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
         buildConfigField("String", "APP_BUILD_TYPE_SUFFIX", "\"\"")
+        // testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "LOW-BATTERY"
     }
 
     buildFeatures {
@@ -49,6 +50,9 @@ android {
         create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6Api33") {
             device = "Pixel 6"
             apiLevel = 33
+            // 选择AOSP镜像源，因为需要ROOT权限
+            // 所以选择真机测试时需要设备ROOT权限，需要刷机
+            // 一般真机是无法测试的
             systemImageSource = "aosp"
         }
     }

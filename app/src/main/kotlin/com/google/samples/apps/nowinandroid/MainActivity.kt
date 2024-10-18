@@ -68,6 +68,8 @@ class MainActivity : ComponentActivity() {
      * JankStats用户追踪App UI渲染性能问题
      * 帧渲染过长的会记录日志
      * lateinit延迟注入，使用时再依赖注入
+     * 当调用 lazyStats.get()才会进行实例化
+     * 通过lazyStats开启追踪
      */
     @Inject
     lateinit var lazyStats: dagger.Lazy<JankStats>

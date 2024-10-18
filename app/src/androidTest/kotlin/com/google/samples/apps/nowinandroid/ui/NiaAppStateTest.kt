@@ -42,8 +42,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
+ * 这里只要是测试主应用的状态
  * Tests [NiaAppState].
- *
+ * Robolectric 是一个测试框架直接运行在Java虚拟机上
  * Note: This could become an unit test if Robolectric is added to the project and the Context
  * is faked.
  */
@@ -53,14 +54,18 @@ class NiaAppStateTest {
     val composeTestRule = createComposeRule()
 
     // Create the test dependencies.
+    // 创建测试用的网络监控模块
     private val networkMonitor = TestNetworkMonitor()
-
+    // 创建测试用的时区模块
     private val timeZoneMonitor = TestTimeZoneMonitor()
 
+    // 创建测试用的新闻仓库与用户偏好仓库，实现相关仓库接口
+    // 终于明白了为什么仓库要定义接口了，因为测试模块也需要实现这些仓库接口，这样测试时才能用到真实应用代码或组件
     private val userNewsResourceRepository =
         CompositeUserNewsResourceRepository(TestNewsRepository(), TestUserDataRepository())
 
     // Subject under test.
+    // 延迟初始化，直至使用时才初始化
     private lateinit var state: NiaAppState
 
     @Test
@@ -68,6 +73,8 @@ class NiaAppStateTest {
         var currentDestination: String? = null
 
         composeTestRule.setContent {
+            // 很遗憾这里测试的导航页面是模拟的，不是真实页面
+            // 因为我测试规则并没有打开真实的Activity
             val navController = rememberTestNavController()
             state = remember(navController) {
                 NiaAppState(

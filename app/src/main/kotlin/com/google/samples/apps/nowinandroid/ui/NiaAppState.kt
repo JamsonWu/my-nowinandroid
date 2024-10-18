@@ -214,13 +214,16 @@ class NiaAppState(
 @Composable
 private fun NavigationTrackingSideEffect(navController: NavHostController) {
     TrackDisposableJank(navController) { metricsHolder ->
+        // 创建路由导航发生变化时的监听器
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            // 路由导航变化时记录帧状态上下文信息
             metricsHolder.state?.putState("Navigation", destination.route.toString())
         }
-
+        // 导航管理添加监听器
         navController.addOnDestinationChangedListener(listener)
 
         onDispose {
+            // 取消监听
             navController.removeOnDestinationChangedListener(listener)
         }
     }

@@ -295,6 +295,7 @@ internal fun ForYouScreen(
         )
     }
     // 跟踪屏幕视图事件，做什么呢？
+    // 记录操作事件日志
     TrackScreenViewEvent(screenName = "ForYou")
     // 提示是否允许发送通知
     NotificationPermissionEffect()

@@ -33,6 +33,7 @@ object JankStatsModule {
     fun providesOnFrameListener(): OnFrameListener = OnFrameListener { frameData ->
         // Make sure to only log janky frames.
         // 标识渲染时间过长的帧，跟踪渲染卡顿位置
+        // 如果某一帧的处理时间超过了系统确定的阈值(每帧大约16.67毫秒)，那么该帧就会被标记为 isJank 为 true
         if (frameData.isJank) {
             // We're currently logging this but would better report it to a backend.
             Log.v("NiA Jank", frameData.toString())

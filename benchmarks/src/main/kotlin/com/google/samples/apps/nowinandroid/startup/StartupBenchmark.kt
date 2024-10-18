@@ -58,8 +58,6 @@ class StartupBenchmark {
     @Test
     fun startupFullyPrecompiled() = startup(CompilationMode.Full())
 
-
-
     private fun startup(compilationMode: CompilationMode) = benchmarkRule.measureRepeated(
         packageName = PACKAGE_NAME,
         metrics = listOf(StartupTimingMetric()),
